@@ -4,7 +4,7 @@
 //
 // Each icon is rendered by upstream's own renderInner() at keyframes along its hover motion, so the geometry every icon's draw() computes is reproduced exactly at those keyframes. Keyframes are placed adaptively: an interval is split until straight interpolation of its numbers stays within TOL canvas units of what draw() gives. The Go runtime interpolates between them, fills in the colours and hands the markup to MyGo's SVG renderer.
 //
-// MyGo does not draw SVG filters, so the drop shadow is written as a second layer, the silhouette of everything upstream shadows, which the Go side blurs. The inner highlight filter is left out.
+// MyGo does not draw SVG filters, so the markup leaves them out: the Go side casts the drop shadow itself from the icon's silhouette, and the inner highlight is left out.
 
 import fs from 'node:fs';
 import zlib from 'node:zlib';
@@ -14,7 +14,6 @@ import { pathToFileURL } from 'node:url';
 const TOL = 0.04;
 const MIN_DEPTH = 2;
 const MAX_DEPTH = 7;
-const SEP = '\u0001';
 const PHASE = Symbol.for('kubai-icons.phase');
 
 const args = process.argv.slice(2);
@@ -64,31 +63,6 @@ for (const base of bases) {
 const walk = (node, fn) => {
   for (const c of node.children) if (typeof c !== 'string') { fn(c); walk(c, fn); }
 };
-const isShadow = (el) => el.getAttribute('filter') === 'url(#sh-K)';
-const hasShadow = (el) => isShadow(el) || el.children.some((c) => typeof c !== 'string' && hasShadow(c));
-
-// Paints everything inside a shadow group in the silhouette colour, as SourceAlpha does.
-function silhouette(el) {
-  if (typeof el === 'string') return;
-  el.removeAttribute('filter');
-  for (const a of ['fill', 'stroke']) {
-    const v = el.getAttribute(a);
-    if (v && v !== 'none') el.setAttribute(a, '{S}');
-  }
-  const style = el.getAttribute('style');
-  if (style) el.setAttribute('style', style.replace(/(fill|stroke):(?!none)[^;]+/g, '$1:{S}'));
-  el.children.forEach(silhouette);
-}
-// Keeps the shadow groups and the groups and transforms around them; drops everything else.
-function shadowOnly(node) {
-  node.children = node.children.filter((c) => typeof c !== 'string' && (c.tag === 'defs' || hasShadow(c)));
-  for (const c of node.children) {
-    if (c.tag === 'defs') c.children = c.children.filter((d) => typeof d !== 'string' && (d.tag === 'mask' || d.tag === 'clipPath'));
-    else if (isShadow(c)) silhouette(c);
-    else shadowOnly(c);
-  }
-}
-
 // MyGo does not draw SVG text: each <text> becomes a path of glyph outlines from gen/glyphs.json, in its place and with its other attributes.
 const glyphs = JSON.parse(fs.readFileSync(new URL('./glyphs.json', import.meta.url), 'utf8'));
 const TEXT_ONLY = new Set(['x', 'y', 'text-anchor', 'font-size', 'font-weight', 'font-family']);
@@ -127,17 +101,12 @@ function frame(def, v, active, out) {
   try {
     const rendered = parse(renderInner(def, { k: 'K', progress: v, state: active ? { active: true } : {}, paint: 'template', names: false }));
     textToPath(rendered);
-    const inner = rendered.children.map(serialize).join('');
-    const main = parse(inner);
-    walk(main, (el) => {
+    walk(rendered, (el) => {
       el.removeAttribute('filter');
       el.removeAttribute('font-family');
       if (el.tag === 'defs') el.children = el.children.filter((d) => typeof d === 'string' || d.tag !== 'filter');
     });
-    const shadow = parse(inner);
-    shadowOnly(shadow);
-    const s = shadow.children.some((c) => typeof c !== 'string' && c.tag !== 'defs') ? shadow.children.map(serialize).join('') : '';
-    return main.children.map(serialize).join('') + SEP + s;
+    return rendered.children.map(serialize).join('');
   } finally {
     globalThis[PHASE] = undefined;
   }

@@ -31,7 +31,7 @@ type iconData struct {
 	Tracks    []track    `json:"tracks"`
 }
 
-// A template is markup with holes: Text[0], then for each i the number in slot Refs[i] followed by Text[i+1]. Main markup and shadow markup are separated by sep.
+// A template is markup with holes: Text[0], then for each i the number in slot Refs[i] followed by Text[i+1].
 type template struct {
 	Text []string `json:"text"`
 	Refs []int    `json:"refs"`
@@ -43,8 +43,6 @@ type track struct {
 	Out    bool        `json:"out"`
 	Keys   [][]float64 `json:"keys"`
 }
-
-const sep = "\x01"
 
 // decodeFamily panics on data in error: the data is generated and tested, so an error is a bug in this module, not in the program using it.
 func decodeFamily(data string) map[string]*Icon {
@@ -100,8 +98,8 @@ func lerp(a, b []float64, k float64) []float64 {
 	return out
 }
 
-// render writes the markup of a pose: the icon's layers, and the silhouette its shadow is cast from (empty when nothing casts one).
-func (t *template) render(slots []float64) (main, shadow string) {
+// render writes the markup of a pose.
+func (t *template) render(slots []float64) string {
 	var sb strings.Builder
 	sb.WriteString(t.Text[0])
 	var buf [24]byte
@@ -109,8 +107,7 @@ func (t *template) render(slots []float64) (main, shadow string) {
 		sb.Write(fmtNum(buf[:0], slots[r]))
 		sb.WriteString(t.Text[i+1])
 	}
-	main, shadow, _ = strings.Cut(sb.String(), sep)
-	return main, shadow
+	return sb.String()
 }
 
 // fmtNum writes n with at most three decimals, as upstream rounds its geometry.

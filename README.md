@@ -85,7 +85,7 @@ At run time, `View` animates progress with MyGo's `AnimateTo` along upstream's c
 
 MyGo's SVG renderer draws no filters and no text, so:
 
-- The drop shadow is a second layer, the silhouette of the shadowed parts blurred with MyGo's `Blur`, at upstream's offset and opacity. It is close, not identical.
+- The drop shadow is cast from the whole icon's silhouette, where upstream casts it from the parts it marks: blurred, at upstream's offset and opacity, and drawn with the icon into one bitmap per pose, so that a screen of icons costs one texture each. It is close, not identical.
 - The faint inner highlight along the top edge of bodies is left out.
 - The text in seven icons (`calendar`, `circle-help`, `languages`, `list-ordered`, `parking`, `quiz`, `spell-check` and their composites) is drawn as glyph outlines from Go Bold, which differs a little from the system font upstream uses; the one CJK glyph, 文, is drawn by hand in strokes of the same weight.
 - Keyboard focus does not play the motion by itself; pass `Hovered` from the focused control.

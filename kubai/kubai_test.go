@@ -101,26 +101,42 @@ func same(a, b *image.RGBA) bool {
 
 // Every pose along every track parses, on the way in and back, including between toggle states.
 func TestEveryPoseParses(t *testing.T) {
-	shadows := 0
 	for _, e := range all.Entries {
 		ic := e.Icon()
 		for _, v := range []float64{0.13, 0.5, 0.87} {
 			for _, out := range []bool{false, true} {
-				m, s := ic.Layers(v, 0, out)
-				if m == nil {
+				if ic.Pose(v, 0, out) == nil {
 					t.Fatalf("%s at %v: no markup", e.Name, v)
 				}
-				if s != nil {
-					shadows++
-				}
 				if ic.Tap() {
-					ic.Layers(v, 0.5, out)
-					ic.Layers(v, 1, out)
+					ic.Pose(v, 0.5, out)
+					ic.Pose(v, 1, out)
 				}
 			}
 		}
 	}
-	if shadows == 0 {
-		t.Fatal("no icon casts a shadow")
+}
+
+// The shadow falls below the icon: the bitmap has coverage under the artwork's lowest row, where the SVG alone has none.
+func TestShadowFallsBelow(t *testing.T) {
+	const px = 72
+	ic := kubai.Mail()
+	plain := ic.SVG(kubai.Options{}, false).Image(px, px, nil)
+	lowest := 0
+	for y := 0; y < px; y++ {
+		for x := 0; x < px; x++ {
+			if plain.Pix[y*plain.Stride+x*4+3] > 0 {
+				lowest = y
+			}
+		}
+	}
+	if b := ic.Bitmap(px); b == nil {
+		t.Fatal("no bitmap")
+	}
+	if w, h := ic.Bitmap(px).Size(); w != px || h != px {
+		t.Fatalf("bitmap is %dx%d", w, h)
+	}
+	if lowest >= px-1 {
+		t.Fatalf("the artwork reaches the bottom edge (row %d), leaving no room to see the shadow", lowest)
 	}
 }
