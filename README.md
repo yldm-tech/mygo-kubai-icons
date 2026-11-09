@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml/badge.svg)](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/yldm-tech/mygo-kubai-icons/kubai.svg)](https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai)
+[![Release](https://img.shields.io/github/v/release/yldm-tech/mygo-kubai-icons)](https://github.com/yldm-tech/mygo-kubai-icons/releases)
 
 English · [简体中文](README.zh-CN.md)
 
@@ -16,10 +17,10 @@ This is an unofficial port. Kubai Icons is designed by Kubai087; the icons are M
 ## Install
 
 ```sh
-go get github.com/yldm-tech/mygo-kubai-icons
+go get github.com/yldm-tech/mygo-kubai-icons@latest
 ```
 
-Requires MyGo v0.8.3 or later.
+Requires Go 1.27.3 and MyGo v0.8.3 or later, as MyGo does. Versions follow semantic versioning, and each [release](https://github.com/yldm-tech/mygo-kubai-icons/releases) lists what changed; `go get github.com/yldm-tech/mygo-kubai-icons@latest` again upgrades.
 
 ## Use
 
@@ -115,6 +116,10 @@ go test ./...
 ```
 
 Update `gen/upstream.json` to the release generated from; CI checks the generated files against it with `--check`. `go run ./gen/glyphs > gen/glyphs.json` rebuilds the glyph table.
+
+## Release
+
+Merging to `main` releases by itself once CI passes (`.github/workflows/release.yml`, configured in `.releaserc.json`): semantic-release reads the [conventional commits](https://www.conventionalcommits.org/) since the last tag, makes a patch release for `fix` and `perf`, a minor one for `feat` and a major one for a breaking change, tags `vX.Y.Z` and publishes the notes as a GitHub Release. Other types, such as `docs`, `ci` and `chore`, release nothing.
 
 ## License
 

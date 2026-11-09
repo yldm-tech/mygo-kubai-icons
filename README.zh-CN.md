@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml/badge.svg)](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/yldm-tech/mygo-kubai-icons/kubai.svg)](https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai)
+[![Release](https://img.shields.io/github/v/release/yldm-tech/mygo-kubai-icons)](https://github.com/yldm-tech/mygo-kubai-icons/releases)
 
 [English](README.md) · 简体中文
 
@@ -16,10 +17,10 @@
 ## 安装
 
 ```sh
-go get github.com/yldm-tech/mygo-kubai-icons
+go get github.com/yldm-tech/mygo-kubai-icons@latest
 ```
 
-需要 MyGo v0.8.3 或更高版本。
+需要 Go 1.27.3 和 MyGo v0.8.3 或更高版本，与 MyGo 本身的要求一致。版本号遵循语义化版本，每个[发布版本](https://github.com/yldm-tech/mygo-kubai-icons/releases)都列出了改动；再次执行 `go get github.com/yldm-tech/mygo-kubai-icons@latest` 即可升级。
 
 ## 用法
 
@@ -115,6 +116,10 @@ go test ./...
 ```
 
 把 `gen/upstream.json` 改成生成时所用的版本；CI 会用 `--check` 校验生成文件与它一致。`go run ./gen/glyphs > gen/glyphs.json` 重建字形表。
+
+## 发布
+
+合并到 `main` 且 CI 通过后自动发布（`.github/workflows/release.yml`，配置在 `.releaserc.json`）：semantic-release 读取上一个标签以来的[约定式提交](https://www.conventionalcommits.org/zh-hans/)，`fix` 和 `perf` 发补丁版本，`feat` 发次版本，破坏性改动发主版本，打上 `vX.Y.Z` 标签并把更新记录发布为 GitHub Release。`docs`、`ci`、`chore` 等其他类型不发布。
 
 ## 许可
 
