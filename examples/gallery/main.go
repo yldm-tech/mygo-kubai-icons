@@ -22,12 +22,14 @@ func main() {
 	soft := flag.Bool("soft", false, "start with the soft look")
 	size := flag.Float64("size", 32, "start with this icon size")
 	pick := flag.String("pick", "", "start with this icon chosen, by its upstream name")
+	every := flag.Bool("all", false, "start with every version in the grid, not only base icons")
 	flag.Parse()
 	g := newGallery()
 	g.query, g.size, g.hoverAll, g.selName = *query, *size, *hover, *pick
 	if *soft {
 		g.variant = 1
 	}
+	g.basesOnly = !*every
 	// The gallery is written in English and Chinese; MyGo shows the one the user reads, in its own controls too. MYGO_LOCALE=en forces one.
 	mygo.App.SetLanguages("en", "zh-Hans")
 	mygo.App.WhenReady(func() {

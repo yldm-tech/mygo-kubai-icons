@@ -59,13 +59,14 @@
       const bar = document.getElementById("bar")
       const mb = (n) => (n / 1048576).toFixed(1)
 
-      // Links can open the gallery on an icon or a search: ?icon=folder-plus, ?q=文件夹, ?soft, ?size=48.
+      // Links can open the gallery on an icon or a search: ?icon=folder-plus, ?q=文件夹, ?soft, ?size=48, ?all for every version rather than base icons only.
       function argv() {
         const p = new URLSearchParams(location.search)
         const args = ["gallery"]
         if (p.get("icon")) args.push("-pick", p.get("icon"))
         if (p.get("q")) args.push("-query", p.get("q"))
         if (p.has("soft")) args.push("-soft")
+        if (p.has("all")) args.push("-all")
         if (/^\d+$/.test(p.get("size") || "")) args.push("-size", p.get("size"))
         return args
       }
