@@ -83,3 +83,40 @@ func TestChosenIconPlaysOnce(t *testing.T) {
 		t.Fatalf("still plays %q after %v", g.pulse, pulseFor)
 	}
 }
+
+// TestGridTours checks that the grid plays the icons in view one after another with no pointer over it, and holds while the pointer is over it.
+func TestGridTours(t *testing.T) {
+	g := demoGallery()
+	g.selName = ""
+	tt := ui.NewTesterWith(g.view, 1280, 820, ui.TesterOptions{})
+	tt.Advance(4*tourStep + tourStep/2)
+	if g.tourAt < 2 || len(g.tour) < 2 {
+		t.Fatalf("after four steps the tour is at item %d with %d playing, want item 2 or later and two or more", g.tourAt, len(g.tour))
+	}
+	r, ok := tt.Find(all.Entries[0].Name)
+	if !ok {
+		t.Fatal("the first icon is not on screen")
+	}
+	tt.Move(r.X+r.W/2, r.Y-20)
+	at := g.tourAt
+	tt.Advance(3 * tourStep)
+	if g.tourAt != at {
+		t.Fatalf("the tour went on from item %d to %d under the pointer", at, g.tourAt)
+	}
+	tt.Move(5, 5)
+	tt.Advance(2*tourStep + tourStep/2)
+	if g.tourAt == at {
+		t.Fatal("the tour did not go on once the pointer left the grid")
+	}
+}
+
+// TestGridStillWithLessMotion checks that the grid does not tour while the system asks for less motion.
+func TestGridStillWithLessMotion(t *testing.T) {
+	g := demoGallery()
+	g.selName = ""
+	tt := ui.NewTesterWith(g.view, 1280, 820, ui.TesterOptions{Preferences: ui.Preferences{ReduceMotion: true}})
+	tt.Advance(3 * tourStep)
+	if len(g.tour) != 0 || tt.FramePending() {
+		t.Fatalf("%d icons play and a frame is pending: %v", len(g.tour), tt.FramePending())
+	}
+}

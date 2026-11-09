@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -66,6 +67,13 @@ type gallery struct {
 	pulse    string    // the icon the grid plays once because it was just chosen
 	pulseAt  time.Time
 
+	tour     map[string]time.Time // the icons the grid plays on its own, by when each started
+	tourAt   int                  // the item the tour played last
+	tourNext time.Time            // when it plays the next, zero while it waits
+	inView   []int                // the items that showed in the last frame
+	building []int                // those of this one
+	paused   bool                 // the pointer is over the grid, which holds the tour
+
 	copied string // what was copied last, the install command or a Go call
 
 	shown  []all.Entry
@@ -74,7 +82,7 @@ type gallery struct {
 	countK bool
 }
 
-func newGallery() *gallery { return &gallery{selIdx: -1} }
+func newGallery() *gallery { return &gallery{selIdx: -1, tourAt: -1, tour: map[string]time.Time{}} }
 
 // filtered returns the icons the search, the category and the base-only switch leave.
 func (g *gallery) filtered() []all.Entry {
@@ -173,6 +181,67 @@ func (g *gallery) pulsing(c *ui.Context, name string) bool {
 	left := pulseFor - c.Now().Sub(g.pulseAt)
 	if left <= 0 {
 		g.pulse = ""
+		return false
+	}
+	c.After(left)
+	return true
+}
+
+// The grid's tour: every tourStep the next icon in view plays its hover for tourHold, left to right and row by row, so that the page moves before anyone hovers it, two or three icons at a time rather than all of them.
+const (
+	tourStep = 500 * time.Millisecond
+	tourHold = 1200 * time.Millisecond
+)
+
+// advanceTour starts the next icon of the tour when it is due. The tour waits while the pointer is over the grid, which plays what it hovers, while every icon is held hovered, and while the system asks for less motion; it starts again a step after.
+func (g *gallery) advanceTour(c *ui.Context, entries []all.Entry) {
+	now := c.Now()
+	for name, at := range g.tour {
+		if now.Sub(at) >= tourHold {
+			delete(g.tour, name)
+		}
+	}
+	if g.paused || g.hoverAll || c.Preferences().ReduceMotion {
+		g.tourNext = time.Time{}
+		return
+	}
+	if len(g.inView) == 0 {
+		// What shows is known a frame after it is laid out.
+		g.tourNext = time.Time{}
+		if len(entries) > 0 {
+			c.After(tourStep)
+		}
+		return
+	}
+	if g.tourNext.IsZero() {
+		g.tourNext = now.Add(tourStep)
+	}
+	if now.Before(g.tourNext) {
+		c.After(g.tourNext.Sub(now))
+		return
+	}
+	next := g.inView[0]
+	for _, i := range g.inView {
+		if i > g.tourAt {
+			next = i
+			break
+		}
+	}
+	if next < len(entries) {
+		g.tour[entries[next].Name] = now
+	}
+	g.tourAt, g.tourNext = next, now.Add(tourStep)
+	c.After(tourStep)
+}
+
+// touring reports whether name plays as part of the tour.
+func (g *gallery) touring(c *ui.Context, name string) bool {
+	at, ok := g.tour[name]
+	if !ok {
+		return false
+	}
+	left := tourHold - c.Now().Sub(at)
+	if left <= 0 {
 		return false
 	}
 	c.After(left)
@@ -356,22 +425,33 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 		}
 	}
 	g.grid.Selected = &g.selIdx
+	g.advanceTour(c, entries)
+	g.building = g.building[:0]
 	opts := g.options()
 	cell := float32(g.size) + 60
 	grid := ui.GridView(c, &g.grid, len(entries), cell+28, cell, func(i int) {
 		e := entries[i]
 		// The card fills the grid's cell, which marks the chosen item itself with its border and background; the card only lights up under the pointer.
 		card := ui.Column(c.Key(e.Name)).Grow(1).Center().Gap(10).Padding(8).Radius(t.Radius).Cursor(ui.CursorPointer).Tooltip(e.Name)
+		// The grid builds a row or two beyond what shows; the tour plays only what does.
+		if card.InViewAmount(0.8) {
+			g.building = append(g.building, i)
+		}
 		if i != g.selIdx && card.Hovered() {
 			card.Background(t.SurfaceHover)
 		}
 		card.Children(func() {
 			o := opts
-			o.Hovered = g.pulsing(c, e.Name) || g.hoverAll || card.Hovered() // pulsing first, so that it ends under the pointer too
+			// pulsing and touring first, so that they end under the pointer too
+			pulse, tour := g.pulsing(c, e.Name), g.touring(c, e.Name)
+			o.Hovered = pulse || tour || g.hoverAll || card.Hovered()
 			e.Icon().View(c, o)
 			ui.Text(c, w.label(e)).FontSize(11).TextColor(t.TextMuted).MaxLines(1)
 		})
 	}).Grow(1).Padding(4, 12)
+	g.paused = grid.Hovered()
+	slices.Sort(g.building)
+	g.inView, g.building = g.building, g.inView
 	// Bring the chosen icon into view. The grid counts its columns from the window's width until it was laid out once, and when the count changes it scrolls to keep its rows; so the first frame leaves this for the next, and the request comes after the grid's own, which it overrides.
 	if g.scroll && g.laidOut {
 		if g.selIdx >= 0 {
