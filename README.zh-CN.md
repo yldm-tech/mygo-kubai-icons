@@ -1,7 +1,7 @@
 # Kubai Icons for MyGo
 
 [![CI](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml/badge.svg)](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/yldm-tech/mygo-kubai-icons.svg)](https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons)
+[![Go Reference](https://pkg.go.dev/badge/github.com/yldm-tech/mygo-kubai-icons/kubai.svg)](https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai)
 
 [English](README.md) · 简体中文
 
@@ -26,7 +26,7 @@ go get github.com/yldm-tech/mygo-kubai-icons
 ```go
 import (
 	"github.com/egoist/mygo/ui"
-	kubai "github.com/yldm-tech/mygo-kubai-icons"
+	"github.com/yldm-tech/mygo-kubai-icons/kubai"
 )
 
 func sidebar(c *ui.Context) {
@@ -87,6 +87,17 @@ MyGo 的 SVG 渲染器不画滤镜，也不画文字，因此：
 - 键盘焦点不会自动触发动画；需要从获得焦点的控件传入 `Hovered`。
 
 想对比两者，可以运行 `internal/compare/compare.sh`：它用上游代码经 `rsvg-convert` 渲染图标，再用本移植经 MyGo 渲染，左右并排输出。
+
+## 目录结构
+
+| 路径 | 内容 |
+|---|---|
+| `kubai/` | 用户导入的包：运行时（`kubai.go`、`data.go`、`color.go`）和生成的图标（`icons_gen.go`）。 |
+| `all/` | 按名称列出全部图标，供图库和选择器使用。 |
+| `examples/gallery/` | 原生图库示例。 |
+| `gen/` | 生成器、字形表和锁定的上游版本。 |
+| `internal/compare/` | 把本移植和上游并排渲染对比的脚本，以及生成动画 GIF 的脚本。 |
+| `licenses/` | 图标和 Go 字体的许可证。 |
 
 ## 重新生成
 

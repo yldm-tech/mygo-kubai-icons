@@ -3,7 +3,7 @@
 // Package all lists every icon, for galleries and pickers that look icons up by name. Importing it keeps every icon in the executable; a program that names its icons should call their functions in package kubai instead.
 package all
 
-import kubai "github.com/yldm-tech/mygo-kubai-icons"
+import "github.com/yldm-tech/mygo-kubai-icons/kubai"
 
 // An Entry is one icon: its upstream name, the name of its function in package kubai, its category and the function.
 type Entry struct {

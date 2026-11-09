@@ -13,8 +13,8 @@ import (
 
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
-	kubai "github.com/yldm-tech/mygo-kubai-icons"
 	"github.com/yldm-tech/mygo-kubai-icons/all"
+	"github.com/yldm-tech/mygo-kubai-icons/kubai"
 )
 
 var accents = []struct {

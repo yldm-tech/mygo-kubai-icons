@@ -10,7 +10,7 @@ cd "$(dirname "$0")/../.."
 rm -rf out && mkdir -p out
 timeout 300 node internal/compare/reference.mjs --upstream "$upstream" --out out/ref "$icons" "$points"
 for f in out/ref/*.svg; do rsvg-convert -w 96 -h 96 "$f" -o "${f%.svg}.png"; done
-go test -run TestWriteFrames -count=1 . -args -compare.out "$PWD/out/port" -compare.icons "$icons" -compare.points "$points" >/dev/null
+go test -run TestWriteFrames -count=1 ./kubai -args -compare.out "$PWD/out/port" -compare.icons "$icons" -compare.points "$points" >/dev/null
 IFS=, read -ra I <<<"$icons"
 IFS=, read -ra P <<<"$points"
 rows=()

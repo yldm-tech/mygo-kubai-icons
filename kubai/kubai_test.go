@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/egoist/mygo/ui"
-	kubai "github.com/yldm-tech/mygo-kubai-icons"
 	"github.com/yldm-tech/mygo-kubai-icons/all"
+	"github.com/yldm-tech/mygo-kubai-icons/kubai"
 )
 
 func TestEveryIconRenders(t *testing.T) {

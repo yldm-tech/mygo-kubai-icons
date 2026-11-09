@@ -9,7 +9,7 @@ icons=$1
 cd "$(dirname "$0")/../.."
 points=$(seq -f '%g' 0 0.05 1 | paste -sd, -)
 rm -rf out/port && mkdir -p out
-go test -run TestWriteFrames -count=1 . -args -compare.out "$PWD/out/port" -compare.icons "$icons" -compare.points "$points" >/dev/null
+go test -run TestWriteFrames -count=1 ./kubai -args -compare.out "$PWD/out/port" -compare.icons "$icons" -compare.points "$points" >/dev/null
 IFS=, read -ra I <<<"$icons"
 IFS=, read -ra P <<<"$points"
 frames=()

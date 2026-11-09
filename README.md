@@ -1,7 +1,7 @@
 # Kubai Icons for MyGo
 
 [![CI](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml/badge.svg)](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/yldm-tech/mygo-kubai-icons.svg)](https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons)
+[![Go Reference](https://pkg.go.dev/badge/github.com/yldm-tech/mygo-kubai-icons/kubai.svg)](https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai)
 
 English · [简体中文](README.zh-CN.md)
 
@@ -26,7 +26,7 @@ Each icon is a function returning a shared `*kubai.Icon`. `View` shows it and pl
 ```go
 import (
 	"github.com/egoist/mygo/ui"
-	kubai "github.com/yldm-tech/mygo-kubai-icons"
+	"github.com/yldm-tech/mygo-kubai-icons/kubai"
 )
 
 func sidebar(c *ui.Context) {
@@ -87,6 +87,17 @@ MyGo's SVG renderer draws no filters and no text, so:
 - Keyboard focus does not play the motion by itself; pass `Hovered` from the focused control.
 
 To compare the two, `internal/compare/compare.sh` renders icons with upstream's code through `rsvg-convert` and with this port through MyGo, side by side.
+
+## Layout
+
+| Path | What it holds |
+|---|---|
+| `kubai/` | The package: the runtime (`kubai.go`, `data.go`, `color.go`) and the generated icons (`icons_gen.go`). |
+| `all/` | Every icon by name, for galleries and pickers. |
+| `examples/gallery/` | The native gallery. |
+| `gen/` | The generator, the glyph table and the pinned upstream release. |
+| `internal/compare/` | Scripts that render this port and upstream side by side, and the motion GIF. |
+| `licenses/` | Licences of the icons and the Go fonts. |
 
 ## Regenerate
 
