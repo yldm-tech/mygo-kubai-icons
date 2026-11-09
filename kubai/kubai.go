@@ -284,17 +284,77 @@ func (ic *Icon) View(c *ui.Context, o Options) ui.Element {
 		box = box.Label(o.Label)
 	}
 	hovered := o.Hovered || (!o.Still && box.Hovered())
-	v := box.AnimateTo("kubai.hover", b2f(hovered), Motion)
-	a := 0.0
+	now, still := c.Now(), c.Preferences().ReduceMotion
+	v := ui.Local(box, "kubai.hover", func() motion { return newMotion(b2f(hovered), now) })
+	v.toward(b2f(hovered), now, still)
+	var a *motion
 	if ic.tap {
-		a = float64(box.AnimateTo("kubai.active", b2f(o.Active), Motion))
+		a = ui.Local(box, "kubai.active", func() motion { return newMotion(b2f(o.Active), now) })
+		a.toward(b2f(o.Active), now, still)
 	}
-	return box.Draw(ic.painter(ic.paint(o), float64(v), a, !hovered, !o.NoShadow))
+	return box.Draw(ic.painter(ic.paint(o), v, a, !hovered, !o.NoShadow))
+}
+
+// motionSteps is how many steps a motion's frames take from rest to the end of the hover: under a pixel apart even at 112 DIPs, and few enough for an icon's bitmaps to hold every step of the frames a motion shows (bitmapMax).
+const motionSteps = 64
+
+// motion is a value going along Motion to 0 or 1, rest or the end of the hover, which the painter reads at the time of the frame it paints. A moving icon so asks only to be painted again (Painter.AnimationFrame), not for the view to be built again as an animated value of the view does: an icon playing costs a frame of its own drawing, however much else the window holds. A new target on the way takes over from where the value is, over the whole curve, as ui.Element.AnimateTo does.
+type motion struct {
+	from, to float64
+	start    time.Time
+}
+
+func newMotion(to float32, now time.Time) motion {
+	return motion{from: float64(to), to: float64(to), start: now}
+}
+
+// toward heads for to from where the value is now; still, as when the system asks for less motion, puts it there at once.
+func (m *motion) toward(to float32, now time.Time, still bool) {
+	switch t := float64(to); {
+	case still:
+		m.from, m.to, m.start = t, t, now
+	case t != m.to:
+		m.from, m.to, m.start = m.at(now), t, now
+	}
+}
+
+// at returns the value at now, and moving whether it is still on its way.
+func (m *motion) at(now time.Time) float64 {
+	v, _ := m.moving(now)
+	return v
+}
+
+func (m *motion) moving(now time.Time) (float64, bool) {
+	if m.from == m.to || Motion.Duration <= 0 {
+		return m.to, false
+	}
+	t := float32(now.Sub(m.start)) / float32(Motion.Duration)
+	if t >= 1 {
+		return m.to, false
+	}
+	ease := Motion.Ease
+	if ease == nil {
+		ease = ui.EaseOut
+	}
+	return m.from + (m.to-m.from)*float64(ease(max(t, 0))), true
 }
 
 // painter draws the icon's bitmap over the box it is given, the padded square round it where the shadow falls, at the display's resolution.
-func (ic *Icon) painter(p paint, v, a float64, out, shadow bool) func(*ui.Painter, ui.Rect) {
+func (ic *Icon) painter(p paint, hover, active *motion, out, shadow bool) func(*ui.Painter, ui.Rect) {
 	return func(pt *ui.Painter, r ui.Rect) {
+		now := pt.Now()
+		v, moving := hover.moving(now)
+		a := 0.0
+		if active != nil {
+			var on bool
+			a, on = active.moving(now)
+			moving = moving || on
+		}
+		if moving {
+			pt.AnimationFrame()
+			// The frames of a motion come in steps of motionSteps, so that a motion playing again finds the bitmaps it drew the time before.
+			v, a = math.Round(v*motionSteps)/motionSteps, math.Round(a*motionSteps)/motionSteps
+		}
 		unit := r.W / canvas
 		full := side * unit
 		px := int(math.Ceil(float64(full * pt.Scale())))
