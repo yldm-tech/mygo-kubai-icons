@@ -15,8 +15,10 @@ const (
 	repoURL     = "https://github.com/yldm-tech/mygo-kubai-icons"
 	docsURL     = "https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai"
 	upstreamURL = "https://github.com/kubai087/kubai-icons"
-	// compactWidth is the window width below which the sidebar folds into a drop-down and the details open in a dialog.
-	compactWidth = 1000
+	// compactWidth is the window width below which the sidebar folds into a drop-down and the details open in a dialog: three columns need about this much to fit their text.
+	compactWidth = 1100
+	// roomyWidth is the width from which the header has room for the install command beside the title.
+	roomyWidth = 1280
 )
 
 var accents = []struct {
@@ -142,17 +144,17 @@ func (g *gallery) view(c *ui.Context) {
 	entries := g.filtered()
 
 	ui.Column(c).Fill().Background(t.Background).Children(func() {
-		g.header(c, w, compact)
+		g.header(c, w, compact, width >= roomyWidth)
 		ui.Row(c).Grow(1).AlignItems(ui.Stretch).Children(func() {
 			if !compact {
 				g.sidebar(c, w)
 			}
-			ui.Column(c).Grow(1).Children(func() {
+			ui.Column(c).Grow(1).MinWidth(0).Children(func() {
 				g.toolbar(c, w, compact)
 				g.gridView(c, w, entries, compact)
 			})
 			if !compact {
-				ui.Column(c).Width(340).BorderWidth(0, 0, 0, 1).BorderColor(t.Border).Background(t.Surface).Children(func() {
+				ui.Column(c).Width(340).Shrink(0).BorderWidth(0, 0, 0, 1).BorderColor(t.Border).Background(t.Surface).Children(func() {
 					g.detail(c, w)
 				})
 			}
@@ -168,18 +170,18 @@ func (g *gallery) view(c *ui.Context) {
 	}
 }
 
-func (g *gallery) header(c *ui.Context, w words, compact bool) {
+func (g *gallery) header(c *ui.Context, w words, compact, roomy bool) {
 	t := c.Theme()
 	ui.Row(c).Padding(14, 20).Gap(14).AlignItems(ui.Center).BorderWidth(0, 0, 1, 0).BorderColor(t.Border).Children(func() {
 		kubai.Shapes().View(c, kubai.Options{Size: 34, Label: w.title})
 		ui.Column(c).Gap(2).Shrink(1).Children(func() {
 			ui.Text(c, w.title).FontSize(18).Bold()
 			if !compact {
-				ui.Text(c, w.tagline).FontSize(12).TextColor(t.TextMuted)
+				ui.Text(c, w.tagline).FontSize(12).TextColor(t.TextMuted).MaxLines(1)
 			}
 		})
 		ui.Spacer(c)
-		if !compact {
+		if roomy {
 			chip := ui.Row(c).Gap(10).AlignItems(ui.Center).Padding(6, 6, 6, 12).Radius(8).Background(t.Surface).Border(1, t.Border)
 			chip.Children(func() {
 				ui.Text(c, w.install).Font("monospace").FontSize(12).Selectable()
@@ -207,7 +209,7 @@ func (g *gallery) header(c *ui.Context, w words, compact bool) {
 func (g *gallery) sidebar(c *ui.Context, w words) {
 	t := c.Theme()
 	counts := g.categoryCounts()
-	ui.Scroll(c).Width(232).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
+	ui.Scroll(c).Width(232).Shrink(0).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
 		ui.Column(c).Padding(12, 10).Gap(2).Children(func() {
 			item := func(id, label string, icon *kubai.Icon) {
 				row := ui.Row(c.Key("cat-"+id)).Gap(10).AlignItems(ui.Center).Padding(6, 10).Radius(8).Cursor(ui.CursorPointer).Label(label)
@@ -263,7 +265,7 @@ func (g *gallery) toolbar(c *ui.Context, w words, compact bool) {
 				}
 			}
 		})
-		ui.Row(c).Gap(14).AlignItems(ui.Center).Children(func() {
+		ui.Row(c).Gap(14).AlignItems(ui.Center).Wrap().Children(func() {
 			ui.Segmented(c, &g.variant, w.color, w.soft).Label(w.look)
 			ui.Row(c).Gap(6).Children(func() {
 				for i, a := range accents {
@@ -283,7 +285,7 @@ func (g *gallery) toolbar(c *ui.Context, w words, compact bool) {
 			ui.Spacer(c)
 			ui.Row(c).Gap(8).AlignItems(ui.Center).Children(func() {
 				ui.Switch(c, &g.basesOnly).Label(w.basesOnly)
-				ui.Text(c, w.basesOnly).FontSize(13)
+				ui.Text(c, w.basesOnly).FontSize(13).MaxLines(1)
 			})
 		})
 	})
