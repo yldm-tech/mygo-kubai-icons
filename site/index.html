@@ -11,14 +11,37 @@
     <link rel="apple-touch-icon" href="logo.png" />
     <link rel="canonical" href="https://kubai.yldm.ai/" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kubai Icons for MyGo" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_CN" />
     <meta property="og:url" content="https://kubai.yldm.ai/" />
     <meta property="og:title" content="Kubai Icons for MyGo" />
     <meta property="og:description" content="2,871 icons that move on hover, for MyGo native UI, drawn by MyGo itself." />
     <meta property="og:image" content="https://kubai.yldm.ai/social-preview.png" />
     <meta property="og:image:width" content="1280" />
     <meta property="og:image:height" content="640" />
+    <meta property="og:image:alt" content="Kubai Icons for MyGo: rows of soft blue icons, drawn by MyGo native UI" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kubai Icons for MyGo" />
+    <meta name="twitter:description" content="2,871 icons that move on hover, for MyGo native UI, drawn by MyGo itself." />
     <meta name="twitter:image" content="https://kubai.yldm.ai/social-preview.png" />
+    <meta name="twitter:image:alt" content="Kubai Icons for MyGo: rows of soft blue icons, drawn by MyGo native UI" />
+    <link rel="sitemap" type="application/xml" href="sitemap.xml" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "Kubai Icons for MyGo",
+        "description": "2,871 icons that move on hover, for MyGo native UI in Go: a port of Kubai Icons that MyGo draws itself, with no web view.",
+        "url": "https://kubai.yldm.ai/",
+        "image": "https://kubai.yldm.ai/social-preview.png",
+        "codeRepository": "https://github.com/yldm-tech/mygo-kubai-icons",
+        "programmingLanguage": "Go",
+        "runtimePlatform": "MyGo",
+        "license": "https://opensource.org/licenses/MIT",
+        "keywords": ["Go", "MyGo", "icons", "animated icons", "native UI", "Kubai Icons"]
+      }
+    </script>
     <style>
       :root { color-scheme: light dark; --bg: #F4F7FF; --fg: #1B2440; --muted: #56607A; --track: #DCE4F5; --bar: #5393FF; }
       @media (prefers-color-scheme: dark) { :root { --bg: #14161B; --fg: #E8ECF5; --muted: #98A0B3; --track: #2A2F3A; } }
@@ -34,6 +57,9 @@
       #status { margin: 0; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
       a { color: var(--bar); }
       .error { color: var(--fg); max-width: 520px; }
+      .about { max-width: 560px; margin-top: 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+      .about p { margin: 0 0 10px; }
+      .about code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--fg); background: var(--track); padding: 2px 6px; border-radius: 4px; }
     </style>
   </head>
   <body>
@@ -44,6 +70,11 @@
       <p class="tagline" id="tagline">2,871 icons that move on hover, drawn by MyGo native UI</p>
       <div class="bar" role="progressbar" aria-label="Loading the gallery"><div id="bar"></div></div>
       <p id="status">Loading the gallery…</p>
+      <section class="about" id="about">
+        <p id="about-text">Kubai Icons for MyGo brings the 2,871 icons of <a href="https://github.com/kubai087/kubai-icons">Kubai Icons</a> to <a href="https://github.com/egoist/mygo">MyGo</a> native UI in Go. A folder opens, an envelope unseals, a calendar turns to the next day: each icon moves on hover, and MyGo draws it itself, with no web view. Pick a colour, the soft look and a size, and copy the Go code. An unofficial port; the icons are MIT licensed.</p>
+        <p><code>go get github.com/yldm-tech/mygo-kubai-icons@latest</code></p>
+        <p><a href="https://github.com/yldm-tech/mygo-kubai-icons">GitHub</a> · <a href="https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai">pkg.go.dev</a> · <a href="https://github.com/yldm-tech/mygo-kubai-icons/releases">Releases</a></p>
+      </section>
       <noscript><p class="error">The gallery runs as WebAssembly and needs JavaScript. See <a href="https://github.com/yldm-tech/mygo-kubai-icons">the repository</a>.</p></noscript>
     </main>
     <script src="wasm_exec.js"></script>
@@ -51,10 +82,11 @@
       // The page speaks Chinese to a browser that prefers it, as the gallery does (it follows the same languages through MyGo).
       const zh = /^zh/i.test(navigator.languages?.[0] || navigator.language || "")
       const say = zh
-        ? { tagline: "2,871 个悬停会动的图标，由 MyGo 原生 UI 绘制", loading: "正在加载图库", starting: "正在启动…", failed: "图库加载失败：", repo: "查看仓库" }
+        ? { tagline: "2,871 个悬停会动的图标，由 MyGo 原生 UI 绘制", about: "把 Kubai Icons 的 2,871 个图标搬到 Go 语言的 MyGo 原生 UI：文件夹打开，信封拆开，日历翻到第二天，每个图标悬停时都会动，全部由 MyGo 自己绘制，不用 WebView。可以选颜色、清透风格和尺寸，复制 Go 代码。非官方移植，图标采用 MIT 协议。", loading: "正在加载图库", starting: "正在启动…", failed: "图库加载失败：", repo: "查看仓库" }
         : { tagline: "2,871 icons that move on hover, drawn by MyGo native UI", loading: "Loading the gallery", starting: "Starting…", failed: "The gallery did not load: ", repo: "See the repository" }
       if (zh) document.documentElement.lang = "zh-CN"
       document.getElementById("tagline").textContent = say.tagline
+      if (say.about) document.getElementById("about-text").textContent = say.about
       const status = document.getElementById("status")
       const bar = document.getElementById("bar")
       const mb = (n) => (n / 1048576).toFixed(1)
