@@ -65,11 +65,13 @@ Unused icons are left out of the executable. A base icon and its composites shar
 
 ## Gallery
 
+[Try it in your browser](https://yldm-tech.github.io/mygo-kubai-icons/): the gallery example compiled to WebAssembly, drawn by MyGo as on the desktop, a download of about 5.5 MB. Or run it natively:
+
 ```sh
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
 ```
 
-Search, pick an accent, the soft look and a size, hover to play, click to copy the Go call.
+Search, pick an accent, the soft look and a size, hover to play, click to copy the Go call. It speaks Chinese or English after the system or browser, and finds icons by their Chinese names too (`all.Entry.Zh`).
 
 ![The gallery example](.github/assets/gallery.png)
 
@@ -97,6 +99,7 @@ To compare the two, `internal/compare/compare.sh` renders icons with upstream's 
 | `kubai/` | The package: the runtime (`kubai.go`, `data.go`, `color.go`) and the generated icons (`icons_gen.go`). |
 | `all/` | Every icon by name, for galleries and pickers. |
 | `examples/gallery/` | The native gallery. |
+| `site/` | The page that loads the gallery as WebAssembly on GitHub Pages; `.github/workflows/pages.yml` builds and publishes it. |
 | `gen/` | The generator, the glyph table and the pinned upstream release. |
 | `internal/compare/` | Scripts that render this port and upstream side by side, and the motion GIF. |
 | `internal/brand/` | Draws the logo and the social preview with this package: `go run ./internal/brand`. |
