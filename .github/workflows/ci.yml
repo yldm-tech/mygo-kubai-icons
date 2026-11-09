@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
+      - run: go vet ./...
+      - run: go test ./...
+      - name: Glyph table is up to date
+        run: go run ./gen/glyphs | diff -u gen/glyphs.json -
+
+  generated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read the pinned upstream release
+        id: upstream
+        run: |
+          echo "repository=$(jq -r .repository gen/upstream.json)" >> "$GITHUB_OUTPUT"
+          echo "commit=$(jq -r .commit gen/upstream.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ steps.upstream.outputs.repository }}
+          ref: ${{ steps.upstream.outputs.commit }}
+          path: _upstream
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Generated icons match upstream
+        run: node gen/generate.mjs --upstream _upstream --check
