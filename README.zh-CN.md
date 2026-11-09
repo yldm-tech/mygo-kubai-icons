@@ -65,6 +65,8 @@ func sidebar(c *ui.Context) {
 
 ## 图库
 
+[在浏览器里试用](https://yldm-tech.github.io/mygo-kubai-icons/)：图库示例编译成 WebAssembly，由 MyGo 绘制，和桌面版一样，下载约 5.5 MB。也可以在本机运行原生版：
+
 ```sh
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
 ```
@@ -97,6 +99,7 @@ MyGo 的 SVG 渲染器不画滤镜，也不画文字，因此：
 | `kubai/` | 用户导入的包：运行时（`kubai.go`、`data.go`、`color.go`）和生成的图标（`icons_gen.go`）。 |
 | `all/` | 按名称列出全部图标，供图库和选择器使用。 |
 | `examples/gallery/` | 原生图库示例。 |
+| `site/` | 在 GitHub Pages 上以 WebAssembly 加载图库的页面；由 `.github/workflows/pages.yml` 构建并发布。 |
 | `gen/` | 生成器、字形表和锁定的上游版本。 |
 | `internal/compare/` | 把本移植和上游并排渲染对比的脚本，以及生成动画 GIF 的脚本。 |
 | `internal/brand/` | 用本包绘制 logo 和社交预览图：`go run ./internal/brand`。 |

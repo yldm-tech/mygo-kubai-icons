@@ -20,6 +20,8 @@ jobs:
         run: test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
       - run: go vet ./...
       - run: go test ./...
+      - name: Gallery builds for the browser
+        run: GOOS=js GOARCH=wasm CGO_ENABLED=0 go build -o /dev/null ./examples/gallery
       - name: Glyph table is up to date
         run: go run ./gen/glyphs | diff -u gen/glyphs.json -
 
