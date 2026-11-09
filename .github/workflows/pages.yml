@@ -1,6 +1,6 @@
 name: Pages
 
-# Publishes the gallery example, compiled to WebAssembly, at https://yldm-tech.github.io/mygo-kubai-icons/.
+# Publishes the gallery example, compiled to WebAssembly, at https://kubai.yldm.ai/.
 
 on:
   push:

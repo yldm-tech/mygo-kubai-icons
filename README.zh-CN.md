@@ -65,7 +65,7 @@ func sidebar(c *ui.Context) {
 
 ## 图库
 
-[在浏览器里试用](https://yldm-tech.github.io/mygo-kubai-icons/)：图库示例编译成 WebAssembly，由 MyGo 绘制，和桌面版一样，下载约 5.5 MB。也可以在本机运行原生版：
+[在浏览器里试用](https://kubai.yldm.ai/)：图库示例编译成 WebAssembly，由 MyGo 绘制，和桌面版一样，下载约 5.5 MB。也可以在本机运行原生版：
 
 ```sh
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
