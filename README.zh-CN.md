@@ -71,7 +71,7 @@ func sidebar(c *ui.Context) {
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
 ```
 
-可以搜索，选主色、清透风格和尺寸，悬停播放，点击复制 Go 调用代码。界面跟随系统或浏览器语言显示中文或英文，也能用中文名搜索图标（`all.Entry.Zh`）。
+可以按分类浏览、按名称搜索（也支持中文名，见 `all.Entry.Zh`），选主色、清透风格和尺寸，悬停播放动画。点击图标可以看大图、按当前设置生成的 Go 代码，以及它带角标和斜杠的各个版本。界面跟随系统或浏览器语言显示中文或英文。网站支持直达链接：[`?icon=folder-plus`](https://kubai.yldm.ai/?icon=folder-plus) 打开某个图标，`?q=文件夹` 带上搜索词，另有 `?soft`、`?size=48`。
 
 ![图库示例](.github/assets/gallery.png)
 

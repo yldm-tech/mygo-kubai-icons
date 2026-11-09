@@ -4,57 +4,90 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Kubai Icons for MyGo</title>
-    <meta name="description" content="The 2,871 Kubai Icons for MyGo native UI, moving on hover. This gallery is the repository's native example, compiled to WebAssembly and drawn by MyGo." />
+    <meta name="description" content="2,871 icons that move on hover, for MyGo native UI. Browse them by category, search them in English or Chinese, and copy their Go code. The gallery is a MyGo app compiled to WebAssembly." />
+    <meta name="theme-color" content="#F4F7FF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161B" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="apple-touch-icon" href="logo.png" />
+    <link rel="canonical" href="https://kubai.yldm.ai/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kubai.yldm.ai/" />
+    <meta property="og:title" content="Kubai Icons for MyGo" />
+    <meta property="og:description" content="2,871 icons that move on hover, for MyGo native UI, drawn by MyGo itself." />
+    <meta property="og:image" content="https://kubai.yldm.ai/social-preview.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://kubai.yldm.ai/social-preview.png" />
     <style>
-      :root { color-scheme: light; }
-      html, body { margin: 0; height: 100%; background: #fff; }
-      body {
-        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-        font: 13px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #6b7280;
-      }
-      a { color: #3b82f6; }
-      .spinner { width: 24px; height: 24px; animation: spin 1s steps(12) infinite; }
-      .spinner line { stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-      @keyframes spin { to { transform: rotate(360deg); } }
-      .error { max-width: 80%; text-align: center; }
+      :root { color-scheme: light dark; --bg: #F4F7FF; --fg: #1B2440; --muted: #56607A; --track: #DCE4F5; --bar: #5393FF; }
+      @media (prefers-color-scheme: dark) { :root { --bg: #14161B; --fg: #E8ECF5; --muted: #98A0B3; --track: #2A2F3A; } }
+      html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); }
+      body { font: 14px system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; }
+      #loader { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 24px; box-sizing: border-box; }
+      #loader img { width: 96px; height: 96px; animation: float 2.4s ease-in-out infinite; }
+      @keyframes float { 50% { transform: translateY(-6px); } }
+      h1 { margin: 6px 0 0; font-size: 26px; letter-spacing: -0.01em; }
+      .tagline { margin: 0; color: var(--muted); }
+      .bar { width: min(320px, 80vw); height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; margin-top: 10px; }
+      .bar > div { height: 100%; width: 0; background: var(--bar); border-radius: 3px; transition: width 0.15s; }
+      #status { margin: 0; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+      a { color: var(--bar); }
+      .error { color: var(--fg); max-width: 520px; }
     </style>
   </head>
   <body>
     <!-- The gallery is examples/gallery, a MyGo native UI app built for GOOS=js by .github/workflows/pages.yml. MyGo replaces this page's content with its own once it runs. -->
-    <svg class="spinner" viewBox="0 0 24 24" role="progressbar" aria-label="Loading the gallery">
-      <g transform="translate(12 12)">
-        <line y1="-5.5" y2="-10" opacity="1" />
-        <line y1="-5.5" y2="-10" opacity="0.92" transform="rotate(-30)" />
-        <line y1="-5.5" y2="-10" opacity="0.84" transform="rotate(-60)" />
-        <line y1="-5.5" y2="-10" opacity="0.76" transform="rotate(-90)" />
-        <line y1="-5.5" y2="-10" opacity="0.68" transform="rotate(-120)" />
-        <line y1="-5.5" y2="-10" opacity="0.6" transform="rotate(-150)" />
-        <line y1="-5.5" y2="-10" opacity="0.52" transform="rotate(-180)" />
-        <line y1="-5.5" y2="-10" opacity="0.44" transform="rotate(-210)" />
-        <line y1="-5.5" y2="-10" opacity="0.36" transform="rotate(-240)" />
-        <line y1="-5.5" y2="-10" opacity="0.28" transform="rotate(-270)" />
-        <line y1="-5.5" y2="-10" opacity="0.2" transform="rotate(-300)" />
-        <line y1="-5.5" y2="-10" opacity="0.2" transform="rotate(-330)" />
-      </g>
-    </svg>
-    <p id="status">Loading the gallery, about 5.5 MB…</p>
-    <noscript><p>The gallery runs as WebAssembly and needs JavaScript. See <a href="https://github.com/yldm-tech/mygo-kubai-icons">the repository</a>.</p></noscript>
+    <main id="loader">
+      <img src="logo.png" alt="" />
+      <h1>Kubai Icons for MyGo</h1>
+      <p class="tagline" id="tagline">2,871 icons that move on hover, drawn by MyGo native UI</p>
+      <div class="bar" role="progressbar" aria-label="Loading the gallery"><div id="bar"></div></div>
+      <p id="status">Loading the gallery…</p>
+      <noscript><p class="error">The gallery runs as WebAssembly and needs JavaScript. See <a href="https://github.com/yldm-tech/mygo-kubai-icons">the repository</a>.</p></noscript>
+    </main>
     <script src="wasm_exec.js"></script>
     <script>
       // The page speaks Chinese to a browser that prefers it, as the gallery does (it follows the same languages through MyGo).
       const zh = /^zh/i.test(navigator.languages?.[0] || navigator.language || "")
       const say = zh
-        ? { loading: "正在加载图库，约 5.5 MB…", failed: "图库加载失败：", repo: "查看仓库。" }
-        : { loading: "Loading the gallery, about 5.5 MB…", failed: "The gallery did not load: ", repo: "See the repository." }
+        ? { tagline: "2,871 个悬停会动的图标，由 MyGo 原生 UI 绘制", loading: "正在加载图库", starting: "正在启动…", failed: "图库加载失败：", repo: "查看仓库" }
+        : { tagline: "2,871 icons that move on hover, drawn by MyGo native UI", loading: "Loading the gallery", starting: "Starting…", failed: "The gallery did not load: ", repo: "See the repository" }
       if (zh) document.documentElement.lang = "zh-CN"
-      document.getElementById("status").textContent = say.loading
-      // The module is published gzip-compressed and inflated here, so the download stays about 5.5 MB whether or not the host compresses it.
+      document.getElementById("tagline").textContent = say.tagline
+      const status = document.getElementById("status")
+      const bar = document.getElementById("bar")
+      const mb = (n) => (n / 1048576).toFixed(1)
+
+      // Links can open the gallery on an icon or a search: ?icon=folder-plus, ?q=文件夹, ?soft, ?size=48.
+      function argv() {
+        const p = new URLSearchParams(location.search)
+        const args = ["gallery"]
+        if (p.get("icon")) args.push("-pick", p.get("icon"))
+        if (p.get("q")) args.push("-query", p.get("q"))
+        if (p.has("soft")) args.push("-soft")
+        if (/^\d+$/.test(p.get("size") || "")) args.push("-size", p.get("size"))
+        return args
+      }
+
+      // The module is published gzip-compressed and inflated here, so the download stays about 5.5 MB whether or not the host compresses it. Counting the compressed bytes as they arrive drives the progress bar.
       async function load() {
         const res = await fetch("gallery.wasm.gz")
         if (!res.ok) throw new Error(`gallery.wasm.gz: HTTP ${res.status}`)
-        const wasm = new Response(res.body.pipeThrough(new DecompressionStream("gzip")), { headers: { "Content-Type": "application/wasm" } })
+        const total = Number(res.headers.get("Content-Length")) || 0
+        let got = 0
+        const counted = res.body.pipeThrough(new TransformStream({
+          transform(chunk, ctl) {
+            got += chunk.byteLength
+            status.textContent = total ? `${say.loading} ${mb(got)} / ${mb(total)} MB` : `${say.loading} ${mb(got)} MB`
+            if (total) bar.style.width = `${Math.min(100, (got / total) * 100)}%`
+            ctl.enqueue(chunk)
+          },
+          flush() { status.textContent = say.starting; bar.style.width = "100%" },
+        }))
+        const wasm = new Response(counted.pipeThrough(new DecompressionStream("gzip")), { headers: { "Content-Type": "application/wasm" } })
         const go = new Go()
-        go.argv = ["gallery"]
+        go.argv = argv()
         const { instance } = await WebAssembly.instantiateStreaming(wasm, go.importObject)
         go.run(instance)
       }
@@ -66,7 +99,7 @@
         a.href = "https://github.com/yldm-tech/mygo-kubai-icons"
         a.textContent = say.repo
         p.append(a)
-        document.body.replaceChildren(p)
+        document.getElementById("loader").replaceChildren(p)
       })
     </script>
   </body>
