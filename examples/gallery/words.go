@@ -16,7 +16,7 @@ type words struct {
 	all, search, look, color, soft, size, basesOnly, category string
 	accents                                                   []string
 
-	hint, hintTouch, count, copiedCall, empty string
+	hint, hintTouch, count, countBases, searchAll, copiedCall, empty string
 
 	pick, preview, previewHint, previewDemo, previewDemoTouch, active, name, function, inCategory, code, copyCode, variants string
 
@@ -40,6 +40,8 @@ var english = words{
 	hint:       "Hover an icon to play it; click it for its code.",
 	hintTouch:  "Tap an icon to play it and see its code.",
 	count:      "%d of %d icons",
+	countBases: "%d base icons of %d",
+	searchAll:  "A search looks through every version",
 	copiedCall: "Copied %s",
 	empty:      "No icon matches. Try another word, or all categories.",
 
@@ -80,6 +82,8 @@ var chinese = words{
 	hint:       "悬停播放动画，点击查看代码。",
 	hintTouch:  "点按图标播放动画并查看代码。",
 	count:      "%d / %d 个图标",
+	countBases: "%d 个基础图标（共 %d 个）",
+	searchAll:  "搜索时包含全部版本",
 	copiedCall: "已复制 %s",
 	empty:      "没有匹配的图标。换个词试试，或者看全部分类。",
 

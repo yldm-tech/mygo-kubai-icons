@@ -81,12 +81,21 @@ type gallery struct {
 	countK bool
 }
 
-func newGallery() *gallery { return &gallery{selIdx: -1, tourAt: -1, tour: map[string]time.Time{}} }
+// newGallery starts on base icons only: about two icons in three are badged or slashed versions of a base, which would fill the first screen with one object five times over. Each base lists its versions in the details, and a search looks through all of them.
+func newGallery() *gallery {
+	return &gallery{selIdx: -1, basesOnly: true, tourAt: -1, tour: map[string]time.Time{}}
+}
+
+// basesShown reports whether the grid leaves out the versions: with the switch on and no search, as a search for a version must find it.
+func (g *gallery) basesShown() bool {
+	return g.basesOnly && strings.TrimSpace(g.query) == ""
+}
 
 // filtered returns the icons the search, the category and the base-only switch leave.
 func (g *gallery) filtered() []all.Entry {
 	q := strings.ToLower(strings.TrimSpace(g.query))
-	key := fmt.Sprintf("%s\x00%s\x00%v", q, g.category, g.basesOnly)
+	bases := g.basesShown()
+	key := fmt.Sprintf("%s\x00%s\x00%v", q, g.category, bases)
 	if g.shown != nil && key == g.shownK {
 		return g.shown
 	}
@@ -95,7 +104,7 @@ func (g *gallery) filtered() []all.Entry {
 		if g.category != "" && e.Category != g.category {
 			continue
 		}
-		if g.basesOnly && e.Name != e.Base {
+		if bases && e.Name != e.Base {
 			continue
 		}
 		if q == "" || strings.Contains(e.Name, q) || strings.Contains(strings.ToLower(e.GoName), q) || strings.Contains(e.Zh, q) {
@@ -109,18 +118,19 @@ func (g *gallery) filtered() []all.Entry {
 
 // categoryCounts counts the icons of each category, all of them under "".
 func (g *gallery) categoryCounts() map[string]int {
-	if g.counts != nil && g.countK == g.basesOnly {
+	bases := g.basesShown()
+	if g.counts != nil && g.countK == bases {
 		return g.counts
 	}
 	g.counts = map[string]int{}
 	for _, e := range all.Entries {
-		if g.basesOnly && e.Name != e.Base {
+		if bases && e.Name != e.Base {
 			continue
 		}
 		g.counts[e.Category]++
 		g.counts[""]++
 	}
-	g.countK = g.basesOnly
+	g.countK = bases
 	return g.counts
 }
 
@@ -401,8 +411,14 @@ func (g *gallery) toolbar(c *ui.Context, w words, compact bool) {
 			})
 			ui.Spacer(c)
 			ui.Row(c).Gap(8).AlignItems(ui.Center).Children(func() {
-				ui.Switch(c, &g.basesOnly).Label(w.basesOnly)
-				ui.Text(c, w.basesOnly).FontSize(13).MaxLines(1)
+				// A search looks through every version, so the switch has nothing to do meanwhile.
+				searching := strings.TrimSpace(g.query) != ""
+				sw := ui.Switch(c, &g.basesOnly).Label(w.basesOnly).Disabled(searching)
+				label := ui.Text(c, w.basesOnly).FontSize(13).MaxLines(1)
+				if searching {
+					sw.Tooltip(w.searchAll)
+					label.TextColor(t.TextMuted).Tooltip(w.searchAll)
+				}
 			})
 		})
 	})
@@ -423,6 +439,16 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 			break
 		}
 	}
+	// A version chosen while the grid shows bases only, from the details or a link, marks its base, lightly: the grid's own mark stays off, so that a click on the base chooses it.
+	group := -1
+	if e, ok := g.chosen(); ok && g.selIdx < 0 && e.Base != e.Name {
+		for i, x := range entries {
+			if x.Name == e.Base {
+				group = i
+				break
+			}
+		}
+	}
 	g.grid.Selected = &g.selIdx
 	g.advanceTour(c, entries)
 	g.building = g.building[:0]
@@ -436,7 +462,10 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 		if card.InViewAmount(0.8) {
 			g.building = append(g.building, i)
 		}
-		if i != g.selIdx && card.Hovered() {
+		switch {
+		case i == group:
+			card.Background(t.SurfacePressed)
+		case i != g.selIdx && card.Hovered():
 			card.Background(t.SurfaceHover)
 		}
 		card.Children(func() {
@@ -452,8 +481,11 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 	g.inView, g.building = g.building, g.inView
 	// Bring the chosen icon into view. The grid counts its columns from the window's width until it was laid out once, and when the count changes it scrolls to keep its rows; so the first frame leaves this for the next, and the request comes after the grid's own, which it overrides.
 	if g.scroll && g.laidOut {
-		if g.selIdx >= 0 {
+		switch {
+		case g.selIdx >= 0:
 			g.grid.ScrollTo(g.selIdx, ui.Center)
+		case group >= 0:
+			g.grid.ScrollTo(group, ui.Center)
 		}
 		g.scroll = false
 	} else if g.scroll {
@@ -479,7 +511,11 @@ func (g *gallery) footer(c *ui.Context, w words, n int) {
 		if g.copied != "" {
 			status = fmt.Sprintf(w.copiedCall, g.copied)
 		}
-		ui.Textf(c, w.count+" · %s", n, kubai.Count, status).FontSize(12).TextColor(t.TextMuted).MaxLines(1).Shrink(1)
+		count := w.count
+		if g.basesShown() {
+			count = w.countBases
+		}
+		ui.Textf(c, count+" · %s", n, kubai.Count, status).FontSize(12).TextColor(t.TextMuted).MaxLines(1).Shrink(1)
 		ui.Spacer(c)
 		muted := func(s string) { ui.Text(c, s).FontSize(12).TextColor(t.TextMuted) }
 		muted(w.credit)
