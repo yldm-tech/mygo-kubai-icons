@@ -17,7 +17,7 @@ func (g *gallery) detail(c *ui.Context, w words) {
 		ui.Column(c).Padding(20).Gap(16).Children(func() {
 			if !ok {
 				ui.Column(c).Gap(14).Padding(40, 8).Center().Children(func() {
-					kubai.Shapes().View(c, kubai.Options{Size: 72, Color: accents[g.accent].color, Variant: kubai.Variant(g.variant)})
+					kubai.Shapes().View(c, kubai.Options{Size: 72, Color: accents[g.accent].color, Variant: kubai.Variant(g.variant), Hovered: g.demo(c, "", false), Still: true})
 					ui.Text(c, w.pick).FontSize(13).TextColor(t.TextMuted).Wrap()
 				})
 				return
@@ -33,11 +33,18 @@ func (g *gallery) detail(c *ui.Context, w words) {
 			stage.Children(func() {
 				o := g.options()
 				o.Size = 112
-				o.Hovered = stage.Hovered()
+				o.Hovered = g.demo(c, e.Name, stage.Hovered())
 				o.Active = g.active
 				o.Label = w.label(e)
 				ic.View(c, o)
-				ui.Text(c, w.previewHint).FontSize(11).TextColor(t.TextMuted)
+				hint := w.previewDemo
+				switch prefs := c.Preferences(); {
+				case prefs.ReduceMotion:
+					hint = w.previewHint // no loop then, the pointer plays it
+				case !prefs.Hover():
+					hint = w.previewDemoTouch
+				}
+				ui.Text(c, hint).FontSize(11).TextColor(t.TextMuted)
 			})
 			if ic.Tap() {
 				ui.Toggle(c, &g.active, w.active)

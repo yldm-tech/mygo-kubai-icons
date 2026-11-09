@@ -1,4 +1,4 @@
-// Gallery shows every icon in a MyGo window: browse by category, search by name (Chinese names too), pick an accent, the soft look and a size, hover an icon to play it, and click it for a large preview, its Go code and its other versions. It speaks Chinese when the system or browser does, and English otherwise. The same program is the site at https://kubai.yldm.ai/, compiled to WebAssembly.
+// Gallery shows every icon in a MyGo window: browse by category, search by name (Chinese names too), pick an accent, the soft look and a size, hover an icon to play it (choosing one plays it once, for a touch screen), and click it for a large preview that plays on its own, its Go code and its other versions. It speaks Chinese when the system or browser does, and English otherwise. The same program is the site at https://kubai.yldm.ai/, compiled to WebAssembly.
 //
 //	go run ./examples/gallery
 //	go run ./examples/gallery -capture gallery.png -query folder

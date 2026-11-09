@@ -61,6 +61,11 @@ type gallery struct {
 	dialog  bool   // the details' dialog, open in a compact window
 	active  bool   // the toggled state the preview shows, for icons a click toggles
 
+	demoName string    // the icon the preview plays on its own, "" for the placeholder
+	demoFrom time.Time // when its loop started, again each time the pointer leaves it
+	pulse    string    // the icon the grid plays once because it was just chosen
+	pulseAt  time.Time
+
 	copied string // what was copied last, the install command or a Go call
 
 	shown  []all.Entry
@@ -129,6 +134,49 @@ func (g *gallery) choose(name string) {
 	if name != g.selName {
 		g.selName, g.active, g.scroll = name, false, true
 	}
+}
+
+// The preview's loop: at rest, then the hover pose from demoIn to demoOut, then back, every demoPeriod. kubai.Motion takes 460 ms each way, so each pose holds a moment.
+const (
+	demoIn     = 700 * time.Millisecond
+	demoOut    = 1900 * time.Millisecond
+	demoPeriod = 2800 * time.Millisecond
+	pulseFor   = 1100 * time.Millisecond // how long a just-chosen icon holds its hover pose in the grid
+)
+
+// demo reports whether the preview of name shows its hover pose: under the pointer it does, as everywhere, and otherwise it plays on its own in a loop, so that a visitor who never hovers, or cannot, still sees the icon move. The loop starts over at rest for each icon and each time the pointer leaves; it does not run while the system asks for less motion.
+func (g *gallery) demo(c *ui.Context, name string, hovered bool) bool {
+	now := c.Now()
+	if hovered || name != g.demoName || c.Preferences().ReduceMotion {
+		g.demoName, g.demoFrom = name, now
+		return hovered
+	}
+	at := now.Sub(g.demoFrom) % demoPeriod
+	switch {
+	case at < demoIn:
+		c.After(demoIn - at)
+		return false
+	case at < demoOut:
+		c.After(demoOut - at)
+		return true
+	default:
+		c.After(demoPeriod - at)
+		return false
+	}
+}
+
+// pulsing reports whether name, just chosen in the grid, plays its hover once: a tap shows the motion where there is no pointer to hover with, and the arrows show it too.
+func (g *gallery) pulsing(c *ui.Context, name string) bool {
+	if name != g.pulse || c.Preferences().ReduceMotion {
+		return false
+	}
+	left := pulseFor - c.Now().Sub(g.pulseAt)
+	if left <= 0 {
+		g.pulse = ""
+		return false
+	}
+	c.After(left)
+	return true
 }
 
 func (g *gallery) copy(c *ui.Context, s string) {
@@ -319,7 +367,7 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 		}
 		card.Children(func() {
 			o := opts
-			o.Hovered = g.hoverAll || card.Hovered()
+			o.Hovered = g.pulsing(c, e.Name) || g.hoverAll || card.Hovered() // pulsing first, so that it ends under the pointer too
 			e.Icon().View(c, o)
 			ui.Text(c, w.label(e)).FontSize(11).TextColor(t.TextMuted).MaxLines(1)
 		})
@@ -337,6 +385,9 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 	if grid.Changed() && g.selIdx >= 0 && g.selIdx < len(entries) {
 		g.selName, g.active = entries[g.selIdx].Name, false
 		g.dialog = compact
+		// The cards were built before the grid took the choice, so the one chosen starts playing in the next frame.
+		g.pulse, g.pulseAt = g.selName, c.Now()
+		c.After(time.Millisecond)
 	}
 }
 
@@ -344,6 +395,9 @@ func (g *gallery) footer(c *ui.Context, w words, n int) {
 	t := c.Theme()
 	ui.Row(c).Padding(8, 20).Gap(6).AlignItems(ui.Center).BorderWidth(1, 0, 0, 0).BorderColor(t.Border).Children(func() {
 		status := w.hint
+		if !c.Preferences().Hover() {
+			status = w.hintTouch
+		}
 		if g.copied != "" {
 			status = fmt.Sprintf(w.copiedCall, g.copied)
 		}
