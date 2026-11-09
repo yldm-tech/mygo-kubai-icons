@@ -140,3 +140,43 @@ func TestShadowFallsBelow(t *testing.T) {
 		t.Fatalf("the artwork reaches the bottom edge (row %d), leaving no room to see the shadow", lowest)
 	}
 }
+
+// TestMotionPaintsWithoutBuilding checks that an icon playing its hover moves on screen while the view is not built again for each frame, and that it lands on the hover pose.
+func TestMotionPaintsWithoutBuilding(t *testing.T) {
+	builds := 0
+	tt := ui.NewTesterWith(func(c *ui.Context) {
+		builds++
+		ui.Box(c).Padding(16).Children(func() { kubai.Folder().View(c, kubai.Options{Size: 48}) })
+	}, 80, 80, ui.TesterOptions{})
+	rest := tt.Image()
+	tt.Move(40, 40)
+	builds = 0
+	tt.Advance(kubai.Motion.Duration / 3)
+	mid := tt.Image()
+	if same(rest, mid) {
+		t.Fatal("the icon did not move a third of the way in")
+	}
+	tt.Advance(kubai.Motion.Duration)
+	end := tt.Image()
+	if same(mid, end) {
+		t.Fatal("the icon did not move on to the end of its hover")
+	}
+	if builds > 1 {
+		t.Fatalf("the view was built %d times while the icon moved, want at most 1", builds)
+	}
+	if tt.FramePending() {
+		t.Fatal("frames keep coming after the motion ended")
+	}
+}
+
+// TestLessMotionJumps checks that, while the system asks for less motion, an icon goes to its hover pose at once and asks for no frames.
+func TestLessMotionJumps(t *testing.T) {
+	tt := ui.NewTesterWith(func(c *ui.Context) {
+		ui.Box(c).Padding(16).Children(func() { kubai.Folder().View(c, kubai.Options{Size: 48}) })
+	}, 80, 80, ui.TesterOptions{Preferences: ui.Preferences{ReduceMotion: true}})
+	rest := tt.Image()
+	tt.Move(40, 40)
+	if same(rest, tt.Image()) || tt.FramePending() {
+		t.Fatalf("the icon did not jump to its hover pose at once (frame pending: %v)", tt.FramePending())
+	}
+}

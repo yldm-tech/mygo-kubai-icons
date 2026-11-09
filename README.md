@@ -80,7 +80,7 @@ Browse by category, search by name (Chinese names too, `all.Entry.Zh`), pick an 
 
 Upstream icons are JavaScript: each declares its layers, a rest and a hover target, and a `draw()` that recomputes its geometry from numbers interpolated between the two. Rather than translate 900 `draw()` functions, `gen/generate.mjs` runs upstream's own renderer at keyframes along each motion and stores the markup as a template with numeric slots. Keyframes are placed adaptively: an interval is split until interpolating its numbers in a straight line stays within 0.04 canvas units (about 0.06 px at 48 px) of what `draw()` gives, so a simple slide needs five keyframes and a damped shake about forty. Swings and pulses, which upstream plays only on the way in, get a separate track for the way back.
 
-At run time, `View` animates progress with MyGo's `AnimateTo` along upstream's curve (460 ms, `cubic-bezier(.22, 1, .36, 1)`), interpolates the slots, resolves the colours with a port of upstream's colour derivation and draws the markup with MyGo's SVG renderer. A frame the cache does not hold takes about 0.08 ms to build and parse.
+At run time, `View` moves progress along upstream's curve (460 ms, `cubic-bezier(.22, 1, .36, 1)`) as it paints, in 64 steps, and asks only to be painted again while it moves (`Painter.AnimationFrame`): an icon playing does not build the view again for each frame, however much else the window holds, and a motion playing again finds the bitmaps it drew before. It interpolates the slots, resolves the colours with a port of upstream's colour derivation and draws the markup with MyGo's SVG renderer. A frame the cache does not hold takes about 0.08 ms to build and parse.
 
 ## Differences from upstream
 
