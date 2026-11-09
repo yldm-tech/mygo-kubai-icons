@@ -65,7 +65,7 @@ Unused icons are left out of the executable. A base icon and its composites shar
 
 ## Gallery
 
-[Try it in your browser](https://yldm-tech.github.io/mygo-kubai-icons/): the gallery example compiled to WebAssembly, drawn by MyGo as on the desktop, a download of about 5.5 MB. Or run it natively:
+[Try it in your browser](https://kubai.yldm.ai/): the gallery example compiled to WebAssembly, drawn by MyGo as on the desktop, a download of about 5.5 MB. Or run it natively:
 
 ```sh
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
