@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/assets/logo.png" width="128" alt="" /></p>
+
 # Kubai Icons for MyGo
 
 [![CI](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml/badge.svg)](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml)
@@ -97,6 +99,7 @@ To compare the two, `internal/compare/compare.sh` renders icons with upstream's 
 | `examples/gallery/` | The native gallery. |
 | `gen/` | The generator, the glyph table and the pinned upstream release. |
 | `internal/compare/` | Scripts that render this port and upstream side by side, and the motion GIF. |
+| `internal/brand/` | Draws the logo and the social preview with this package: `go run ./internal/brand`. |
 | `licenses/` | Licences of the icons and the Go fonts. |
 
 ## Regenerate
