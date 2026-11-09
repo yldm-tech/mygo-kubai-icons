@@ -84,7 +84,7 @@ func TestChosenIconPlaysOnce(t *testing.T) {
 	}
 }
 
-// TestGridTours checks that the grid plays the icons in view one after another with no pointer over it, and holds while the pointer is over it.
+// TestGridTours checks that the grid plays the icons in view one after another on its own, and goes on with the pointer resting on it.
 func TestGridTours(t *testing.T) {
 	g := demoGallery()
 	g.selName = ""
@@ -99,14 +99,9 @@ func TestGridTours(t *testing.T) {
 	}
 	tt.Move(r.X+r.W/2, r.Y-20)
 	at := g.tourAt
-	tt.Advance(3 * tourStep)
-	if g.tourAt != at {
-		t.Fatalf("the tour went on from item %d to %d under the pointer", at, g.tourAt)
-	}
-	tt.Move(5, 5)
 	tt.Advance(2*tourStep + tourStep/2)
 	if g.tourAt == at {
-		t.Fatal("the tour did not go on once the pointer left the grid")
+		t.Fatalf("the tour stopped at item %d with the pointer on the grid", at)
 	}
 }
 

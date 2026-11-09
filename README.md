@@ -72,7 +72,7 @@ Unused icons are left out of the executable. A base icon and its composites shar
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
 ```
 
-Browse by category, search by name (Chinese names too, `all.Entry.Zh`), pick an accent, the soft look and a size, and hover an icon to play it. The icons in view play on their own one after another while the pointer is away from the grid, and choosing one, with a click, a tap or the arrows, plays it once. Click one for a large preview that plays its motion on its own, its Go code with those settings and its badged and slashed versions. It speaks Chinese or English after the system or browser, and holds still where the system asks for less motion. On the site, a link can open an icon or a search: [`?icon=folder-plus`](https://kubai.yldm.ai/?icon=folder-plus), `?q=文件夹`, `?soft`, `?size=48`.
+Browse by category, search by name (Chinese names too, `all.Entry.Zh`), pick an accent, the soft look and a size, and hover an icon to play it. The icons in view also play on their own, one after another, and choosing one, with a click, a tap or the arrows, plays it once. Click one for a large preview that plays its motion on its own, its Go code with those settings and its badged and slashed versions. It speaks Chinese or English after the system or browser, and holds still where the system asks for less motion. On the site, a link can open an icon or a search: [`?icon=folder-plus`](https://kubai.yldm.ai/?icon=folder-plus), `?q=文件夹`, `?soft`, `?size=48`.
 
 ![The gallery example](.github/assets/gallery.png)
 

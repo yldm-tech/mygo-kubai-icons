@@ -72,7 +72,6 @@ type gallery struct {
 	tourNext time.Time            // when it plays the next, zero while it waits
 	inView   []int                // the items that showed in the last frame
 	building []int                // those of this one
-	paused   bool                 // the pointer is over the grid, which holds the tour
 
 	copied string // what was copied last, the install command or a Go call
 
@@ -193,7 +192,7 @@ const (
 	tourHold = 1200 * time.Millisecond
 )
 
-// advanceTour starts the next icon of the tour when it is due. The tour waits while the pointer is over the grid, which plays what it hovers, while every icon is held hovered, and while the system asks for less motion; it starts again a step after.
+// advanceTour starts the next icon of the tour when it is due. It goes on under the pointer, which rests on the grid most of the time on a desktop, and the icon hovered plays as any hovered icon does; it waits while every icon is held hovered and while the system asks for less motion, and starts again a step after.
 func (g *gallery) advanceTour(c *ui.Context, entries []all.Entry) {
 	now := c.Now()
 	for name, at := range g.tour {
@@ -201,7 +200,7 @@ func (g *gallery) advanceTour(c *ui.Context, entries []all.Entry) {
 			delete(g.tour, name)
 		}
 	}
-	if g.paused || g.hoverAll || c.Preferences().ReduceMotion {
+	if g.hoverAll || c.Preferences().ReduceMotion {
 		g.tourNext = time.Time{}
 		return
 	}
@@ -449,7 +448,6 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 			ui.Text(c, w.label(e)).FontSize(11).TextColor(t.TextMuted).MaxLines(1)
 		})
 	}).Grow(1).Padding(4, 12)
-	g.paused = grid.Hovered()
 	slices.Sort(g.building)
 	g.inView, g.building = g.building, g.inView
 	// Bring the chosen icon into view. The grid counts its columns from the window's width until it was laid out once, and when the count changes it scrolls to keep its rows; so the first frame leaves this for the next, and the request comes after the grid's own, which it overrides.
