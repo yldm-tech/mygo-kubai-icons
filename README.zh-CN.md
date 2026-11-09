@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/assets/logo.png" width="128" alt="" /></p>
+
 # Kubai Icons for MyGo
 
 [![CI](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml/badge.svg)](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml)
@@ -97,6 +99,7 @@ MyGo 的 SVG 渲染器不画滤镜，也不画文字，因此：
 | `examples/gallery/` | 原生图库示例。 |
 | `gen/` | 生成器、字形表和锁定的上游版本。 |
 | `internal/compare/` | 把本移植和上游并排渲染对比的脚本，以及生成动画 GIF 的脚本。 |
+| `internal/brand/` | 用本包绘制 logo 和社交预览图：`go run ./internal/brand`。 |
 | `licenses/` | 图标和 Go 字体的许可证。 |
 
 ## 重新生成
