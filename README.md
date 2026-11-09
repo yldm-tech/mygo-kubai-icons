@@ -71,7 +71,7 @@ Unused icons are left out of the executable. A base icon and its composites shar
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
 ```
 
-Search, pick an accent, the soft look and a size, hover to play, click to copy the Go call.
+Search, pick an accent, the soft look and a size, hover to play, click to copy the Go call. It speaks Chinese or English after the system or browser, and finds icons by their Chinese names too (`all.Entry.Zh`).
 
 ![The gallery example](.github/assets/gallery.png)
 

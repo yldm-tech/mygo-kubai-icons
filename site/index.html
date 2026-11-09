@@ -41,6 +41,13 @@
     <noscript><p>The gallery runs as WebAssembly and needs JavaScript. See <a href="https://github.com/yldm-tech/mygo-kubai-icons">the repository</a>.</p></noscript>
     <script src="wasm_exec.js"></script>
     <script>
+      // The page speaks Chinese to a browser that prefers it, as the gallery does (it follows the same languages through MyGo).
+      const zh = /^zh/i.test(navigator.languages?.[0] || navigator.language || "")
+      const say = zh
+        ? { loading: "正在加载图库，约 5.5 MB…", failed: "图库加载失败：", repo: "查看仓库。" }
+        : { loading: "Loading the gallery, about 5.5 MB…", failed: "The gallery did not load: ", repo: "See the repository." }
+      if (zh) document.documentElement.lang = "zh-CN"
+      document.getElementById("status").textContent = say.loading
       // The module is published gzip-compressed and inflated here, so the download stays about 5.5 MB whether or not the host compresses it.
       async function load() {
         const res = await fetch("gallery.wasm.gz")
@@ -54,10 +61,10 @@
       load().catch((e) => {
         const p = document.createElement("p")
         p.className = "error"
-        p.append("The gallery did not load: " + e.message + ". ")
+        p.append(say.failed + e.message + (zh ? "。" : ". "))
         const a = document.createElement("a")
         a.href = "https://github.com/yldm-tech/mygo-kubai-icons"
-        a.textContent = "See the repository."
+        a.textContent = say.repo
         p.append(a)
         document.body.replaceChildren(p)
       })

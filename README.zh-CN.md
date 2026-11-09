@@ -71,7 +71,7 @@ func sidebar(c *ui.Context) {
 go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
 ```
 
-可以搜索，选主色、清透风格和尺寸，悬停播放，点击复制 Go 调用代码。
+可以搜索，选主色、清透风格和尺寸，悬停播放，点击复制 Go 调用代码。界面跟随系统或浏览器语言显示中文或英文，也能用中文名搜索图标（`all.Entry.Zh`）。
 
 ![图库示例](.github/assets/gallery.png)
 
