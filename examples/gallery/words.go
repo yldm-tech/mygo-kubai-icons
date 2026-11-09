@@ -16,9 +16,9 @@ type words struct {
 	all, search, look, color, soft, size, basesOnly, category string
 	accents                                                   []string
 
-	hint, count, copiedCall, empty string
+	hint, hintTouch, count, copiedCall, empty string
 
-	pick, preview, previewHint, active, name, function, inCategory, code, copyCode, variants string
+	pick, preview, previewHint, previewDemo, previewDemoTouch, active, name, function, inCategory, code, copyCode, variants string
 
 	credit, mit, unofficial, drawnBy string
 }
@@ -38,20 +38,23 @@ var english = words{
 	accents: []string{"Blue", "Violet", "Pink", "Orange", "Green", "Slate"},
 
 	hint:       "Hover an icon to play it; click it for its code.",
+	hintTouch:  "Tap an icon to play it and see its code.",
 	count:      "%d of %d icons",
 	copiedCall: "Copied %s",
 	empty:      "No icon matches. Try another word, or all categories.",
 
-	pick:        "Pick an icon to see it large, with its code and its other versions.",
-	preview:     "Preview",
-	previewHint: "Hover to play",
-	active:      "Toggled on",
-	name:        "Name",
-	function:    "Function",
-	inCategory:  "Category",
-	code:        "Code",
-	copyCode:    "Copy code",
-	variants:    "Versions",
+	pick:             "Pick an icon to see it large, with its code and its other versions.",
+	preview:          "Preview",
+	previewHint:      "Hover to play",
+	previewDemo:      "Plays on its own; hover to hold it",
+	previewDemoTouch: "Plays on its own",
+	active:           "Toggled on",
+	name:             "Name",
+	function:         "Function",
+	inCategory:       "Category",
+	code:             "Code",
+	copyCode:         "Copy code",
+	variants:         "Versions",
 
 	credit:     "Icons from",
 	mit:        "MIT",
@@ -75,20 +78,23 @@ var chinese = words{
 	accents: []string{"蓝", "紫", "粉", "橙", "绿", "灰"},
 
 	hint:       "悬停播放动画，点击查看代码。",
+	hintTouch:  "点按图标播放动画并查看代码。",
 	count:      "%d / %d 个图标",
 	copiedCall: "已复制 %s",
 	empty:      "没有匹配的图标。换个词试试，或者看全部分类。",
 
-	pick:        "选一个图标，这里会显示大图、代码和同组的其他版本。",
-	preview:     "预览",
-	previewHint: "悬停播放",
-	active:      "选中状态",
-	name:        "名称",
-	function:    "函数",
-	inCategory:  "分类",
-	code:        "代码",
-	copyCode:    "复制代码",
-	variants:    "同组版本",
+	pick:             "选一个图标，这里会显示大图、代码和同组的其他版本。",
+	preview:          "预览",
+	previewHint:      "悬停播放",
+	previewDemo:      "自动演示，悬停定格",
+	previewDemoTouch: "自动演示",
+	active:           "选中状态",
+	name:             "名称",
+	function:         "函数",
+	inCategory:       "分类",
+	code:             "代码",
+	copyCode:         "复制代码",
+	variants:         "同组版本",
 
 	credit:     "图标来自",
 	mit:        "MIT 协议",
