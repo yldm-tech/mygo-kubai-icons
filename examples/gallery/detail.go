@@ -71,8 +71,12 @@ func (g *gallery) detail(c *ui.Context, w words) {
 						g.copy(c, code)
 					}
 				})
-				ui.Box(c).Padding(12).Radius(10).Background(t.Background).Border(1, t.Border).Children(func() {
-					ui.Text(c, code).Font("monospace").FontSize(12).Selectable().Wrap()
+				pal := lightCode
+				if t.Dark {
+					pal = darkCode
+				}
+				ui.Box(c).Padding(12, 14).Radius(10).Background(t.Background).Border(1, t.Border).Children(func() {
+					ui.RichText(c, highlight(strings.ReplaceAll(code, "\t", "  "), pal)...).Font("monospace").FontSize(12).LineHeight(1.5).Selectable()
 				})
 			})
 
@@ -125,7 +129,11 @@ func (g *gallery) code(e all.Entry, ic *kubai.Icon) string {
 	if ic.Tap() && g.active {
 		opts = append(opts, "Active: true")
 	}
-	return fmt.Sprintf("kubai.%s().View(c, kubai.Options{%s})", e.GoName, strings.Join(opts, ", "))
+	// The call breaks after the icon so that each line fits the panel, whatever the icon's name.
+	if len(opts) == 0 {
+		return fmt.Sprintf("kubai.%s().\n\tView(c, kubai.Options{})", e.GoName)
+	}
+	return fmt.Sprintf("kubai.%s().\n\tView(c, kubai.Options{\n\t\t%s,\n\t})", e.GoName, strings.Join(opts, ",\n\t\t"))
 }
 
 // versions lists the base icon of e and every composite of it.

@@ -223,7 +223,8 @@ func (g *gallery) sidebar(c *ui.Context, w words) {
 					g.category = id
 				}
 				row.Children(func() {
-					o := kubai.Options{Size: 20, Color: accents[g.accent].color, Variant: kubai.Variant(g.variant), NoShadow: true, Hovered: row.Hovered()}
+					// The categories keep the default look whatever the toolbar sets, so that a switch redraws only the icons it shows.
+					o := kubai.Options{Size: 20, NoShadow: true, Hovered: row.Hovered()}
 					icon.View(c, o)
 					txt := ui.Text(c, label).FontSize(13).Grow(1).MaxLines(1)
 					if g.category == id {
@@ -311,11 +312,9 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 	cell := float32(g.size) + 60
 	grid := ui.GridView(c, &g.grid, len(entries), cell+28, cell, func(i int) {
 		e := entries[i]
-		card := ui.Column(c.Key(e.Name)).Center().Gap(10).Padding(8).Radius(10).Cursor(ui.CursorPointer).Tooltip(e.Name)
-		switch {
-		case i == g.selIdx:
-			card.Border(1.5, t.Accent) // the grid paints the chosen item's background itself
-		case card.Hovered():
+		// The card fills the grid's cell, which marks the chosen item itself with its border and background; the card only lights up under the pointer.
+		card := ui.Column(c.Key(e.Name)).Grow(1).Center().Gap(10).Padding(8).Radius(t.Radius).Cursor(ui.CursorPointer).Tooltip(e.Name)
+		if i != g.selIdx && card.Hovered() {
 			card.Background(t.SurfaceHover)
 		}
 		card.Children(func() {

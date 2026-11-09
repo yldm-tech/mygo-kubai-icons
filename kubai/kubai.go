@@ -11,6 +11,7 @@
 package kubai
 
 import (
+	"math"
 	"strconv"
 	"sync"
 	"time"
@@ -63,9 +64,11 @@ type Icon struct {
 	templates []template
 	tracks    []track
 
-	mu    sync.Mutex
-	cache map[frameKey]*layers
-	fills map[fillKey]*template
+	mu      sync.Mutex
+	cache   map[frameKey]*ui.SVG
+	fills   map[fillKey]*template
+	bitmaps map[bitmapKey]*ui.Bitmap
+	last    *ui.Bitmap // the bitmap drawn last, shown while a new one waits for the budget
 }
 
 // Name is the icon's upstream id, such as "folder-plus".
@@ -86,11 +89,6 @@ const (
 
 const svgHead = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -5.5 36 36" width="36" height="36" fill="none">`
 
-// layers is one rendered moment: the icon, and the silhouette its shadow is blurred from (nil when nothing casts one).
-type layers struct {
-	main, shadow *ui.SVG
-}
-
 type frameKey struct {
 	p    paint
 	v, a uint16
@@ -100,14 +98,18 @@ type frameKey struct {
 // The cache holds the poses icons rest in and those passed through recently; it is cleared when it grows past this many.
 const cacheMax = 256
 
+func newFrameKey(p paint, v, a float64, out bool) frameKey {
+	return frameKey{p: p, v: uint16(v*1024 + 0.5), a: uint16(a*1024 + 0.5), out: out}
+}
+
 // frame renders the icon at hover progress v and toggle progress a, both 0 to 1, on its way out (back to rest) or in.
-func (ic *Icon) frame(p paint, v, a float64, out bool) *layers {
-	k := frameKey{p: p, v: uint16(v*1024 + 0.5), a: uint16(a*1024 + 0.5), out: out}
+func (ic *Icon) frame(p paint, v, a float64, out bool) *ui.SVG {
+	k := newFrameKey(p, v, a, out)
 	ic.mu.Lock()
-	l := ic.cache[k]
+	s := ic.cache[k]
 	ic.mu.Unlock()
-	if l != nil {
-		return l
+	if s != nil {
+		return s
 	}
 	v, a = float64(k.v)/1024, float64(k.a)/1024
 	ps := ic.pose(v, 0, out)
@@ -122,18 +124,83 @@ func (ic *Icon) frame(p paint, v, a float64, out bool) *layers {
 			ps = pa
 		}
 	}
-	main, shadow := ic.filled(p, ps.t).render(ps.slots)
-	l = &layers{main: ui.MustParseSVG([]byte(svgHead + main + "</svg>"))}
-	if shadow != "" {
-		l.shadow = ui.MustParseSVG([]byte(svgHead + `<g transform="translate(0 2)">` + shadow + "</g></svg>"))
-	}
+	s = ui.MustParseSVG([]byte(svgHead + ic.filled(p, ps.t).render(ps.slots) + "</svg>"))
 	ic.mu.Lock()
 	if ic.cache == nil || len(ic.cache) >= cacheMax {
-		ic.cache = make(map[frameKey]*layers)
+		ic.cache = make(map[frameKey]*ui.SVG)
 	}
-	ic.cache[k] = l
+	ic.cache[k] = s
 	ic.mu.Unlock()
-	return l
+	return s
+}
+
+type bitmapKey struct {
+	frameKey
+	px     int
+	shadow bool
+}
+
+// bitmapMax bounds the bitmaps an icon keeps: those it rests in at the sizes and colours shown, and the frames of a motion, which come again when it plays again.
+const bitmapMax = 96
+
+// cached returns the bitmap of k if the icon keeps it.
+func (ic *Icon) cached(k bitmapKey) *ui.Bitmap {
+	ic.mu.Lock()
+	defer ic.mu.Unlock()
+	return ic.bitmaps[k]
+}
+
+// Drawing new bitmaps is the work a switch of colour, look or size brings to every icon on screen at once. budget spreads it over frames: once a frame spent budgetPerFrame on it, the icons still waiting show the bitmap they showed before, or nothing yet, and ask for the next frame, so that the switch shows at once and the icons follow within a few frames.
+var budget struct {
+	mu     sync.Mutex
+	window time.Time
+	spent  time.Duration
+}
+
+const (
+	budgetPerFrame = 8 * time.Millisecond
+	// budgetWindow is how long after the first bitmap of a frame others count as the same frame's.
+	budgetWindow = 12 * time.Millisecond
+)
+
+func overBudget() bool {
+	budget.mu.Lock()
+	defer budget.mu.Unlock()
+	if now := time.Now(); now.Sub(budget.window) > budgetWindow {
+		budget.window, budget.spent = now, 0
+	}
+	return budget.spent >= budgetPerFrame
+}
+
+func spend(d time.Duration) {
+	budget.mu.Lock()
+	budget.spent += d
+	budget.mu.Unlock()
+}
+
+// bitmap returns the icon drawn at a moment of its motion, px device pixels square for the padded box, with its drop shadow under it unless shadow is false. Drawing an icon as one bitmap, rather than an SVG over a blurred one, keeps a screen of icons to one texture each, with no offscreen pass a frame per icon.
+func (ic *Icon) bitmap(p paint, v, a float64, out bool, px int, shadow bool) *ui.Bitmap {
+	k := bitmapKey{newFrameKey(p, v, a, out), px, shadow}
+	ic.mu.Lock()
+	b := ic.bitmaps[k]
+	ic.mu.Unlock()
+	if b != nil {
+		return b
+	}
+	img := ic.frame(p, v, a, out).Image(px, px, nil)
+	if shadow {
+		// Upstream's shadow: the silhouette moved down 2 units and blurred by 2, in a light tint of the accent at 21% opacity.
+		u := float64(px) / side
+		img = castShadow(img, parseHex(tint("#8AB6FF", p.c)), 2*u, 2*u, 0.21)
+	}
+	b = ui.NewBitmap(img)
+	ic.mu.Lock()
+	if ic.bitmaps == nil || len(ic.bitmaps) >= bitmapMax {
+		ic.bitmaps = make(map[bitmapKey]*ui.Bitmap)
+	}
+	ic.bitmaps[k] = b
+	ic.mu.Unlock()
+	return b
 }
 
 // filled returns template t with its colours resolved for p. Colour tokens sit wholly in the text between numbers, so each piece is filled on its own.
@@ -203,7 +270,7 @@ func (ic *Icon) SVG(o Options, hovered bool) *ui.SVG {
 	if o.Active {
 		a = 1
 	}
-	return ic.frame(ic.paint(o), v, a, false).main
+	return ic.frame(ic.paint(o), v, a, false)
 }
 
 // View shows the icon, o.Size DIPs square, moving on hover. Give each icon of a view its own key (c.Key) when icons come and go, so that each keeps its motion.
@@ -222,18 +289,37 @@ func (ic *Icon) View(c *ui.Context, o Options) ui.Element {
 	if ic.tap {
 		a = float64(box.AnimateTo("kubai.active", b2f(o.Active), Motion))
 	}
-	return box.Children(func() { ic.layers(c, o, size, float64(v), a, !hovered) })
+	return box.Draw(ic.painter(ic.paint(o), float64(v), a, !hovered, !o.NoShadow))
 }
 
-func (ic *Icon) layers(c *ui.Context, o Options, size float32, v, a float64, out bool) {
-	l := ic.frame(ic.paint(o), v, a, out)
-	unit := size / canvas
-	full := side * unit
-	if l.shadow != nil && !o.NoShadow {
-		// Upstream's shadow: the silhouette blurred by 2 units, moved down 2 (in the markup) at 21% opacity.
-		ui.Image(c, l.shadow).Size(full, full).Absolute().Left(-pad * unit).Top(-pad * unit).Blur(2 * unit).Opacity(0.21)
+// painter draws the icon's bitmap over the box it is given, the padded square round it where the shadow falls, at the display's resolution.
+func (ic *Icon) painter(p paint, v, a float64, out, shadow bool) func(*ui.Painter, ui.Rect) {
+	return func(pt *ui.Painter, r ui.Rect) {
+		unit := r.W / canvas
+		full := side * unit
+		px := int(math.Ceil(float64(full * pt.Scale())))
+		dst := ui.Rect{X: r.X - pad*unit, Y: r.Y - pad*unit, W: full, H: full}
+		b := ic.cached(bitmapKey{newFrameKey(p, v, a, out), px, shadow})
+		if b == nil {
+			if overBudget() {
+				ic.mu.Lock()
+				last := ic.last
+				ic.mu.Unlock()
+				if last != nil {
+					pt.Image(last, dst, ui.Contain)
+				}
+				pt.After(time.Millisecond)
+				return
+			}
+			start := time.Now()
+			b = ic.bitmap(p, v, a, out, px, shadow)
+			spend(time.Since(start))
+		}
+		ic.mu.Lock()
+		ic.last = b
+		ic.mu.Unlock()
+		pt.Image(b, dst, ui.Contain)
 	}
-	ui.Image(c, l.main).Size(full, full).Absolute().Left(-pad * unit).Top(-pad * unit)
 }
 
 func b2f(b bool) float32 {

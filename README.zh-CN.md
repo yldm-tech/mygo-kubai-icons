@@ -85,7 +85,7 @@ go run github.com/yldm-tech/mygo-kubai-icons/examples/gallery@latest
 
 MyGo 的 SVG 渲染器不画滤镜，也不画文字，因此：
 
-- 投影是单独的一层：把带阴影部分的剪影用 MyGo 的 `Blur` 模糊，偏移和不透明度与上游一致。效果接近，但不完全相同。
+- 投影取自整个图标的剪影（上游只取它标记的部分），模糊后按上游的偏移和不透明度，和图标一起画进同一张位图，每个姿态一张，所以满屏的图标每个只占一张纹理。效果接近，但不完全相同。
 - 图形顶边那道很淡的内高光省略了。
 - 七个图标（`calendar`、`circle-help`、`languages`、`list-ordered`、`parking`、`quiz`、`spell-check` 及其组合版）里的文字，转换成了 Go Bold 字体的字形轮廓，和上游使用的系统字体略有不同；唯一的中文字「文」是按相同笔画粗细手绘的。
 - 键盘焦点不会自动触发动画；需要从获得焦点的控件传入 `Hovered`。
