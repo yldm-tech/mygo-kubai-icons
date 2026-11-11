@@ -8,7 +8,7 @@
 
 English · [简体中文](README.zh-CN.md)
 
-The 2,871 icons of [Kubai Icons](https://github.com/kubai087/kubai-icons) for [MyGo](https://github.com/egoist/mygo) native UI, moving on hover as they do on the web: a folder opens, an envelope unseals, a calendar turns to the next day. MyGo draws them itself, with no web view.
+The 2,901 icons of [Kubai Icons](https://github.com/kubai087/kubai-icons) for [MyGo](https://github.com/egoist/mygo) native UI, moving on hover as they do on the web: a folder opens, an envelope unseals, a calendar turns to the next day. MyGo draws them itself, with no web view.
 
 ![Icons playing their hover motion, drawn by MyGo](.github/assets/motion.gif)
 
@@ -110,7 +110,7 @@ To compare the two, `internal/compare/compare.sh` renders icons with upstream's 
 
 ```sh
 git clone https://github.com/kubai087/kubai-icons ../kubai-icons
-git -C ../kubai-icons checkout kubai-icons@0.2.2   # or a newer release
+git -C ../kubai-icons checkout kubai-icons@0.4.1   # or a newer release
 node gen/generate.mjs --upstream ../kubai-icons
 go test ./...
 ```

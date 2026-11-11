@@ -8,7 +8,7 @@
 
 [English](README.md) · 简体中文
 
-把 [Kubai Icons](https://github.com/kubai087/kubai-icons) 的 2,871 个图标搬到 [MyGo](https://github.com/egoist/mygo) 原生 UI，悬停时和网页版一样动起来：文件夹打开，信封拆开，日历翻到第二天。全部由 MyGo 自己绘制，不用 WebView。
+把 [Kubai Icons](https://github.com/kubai087/kubai-icons) 的 2,901 个图标搬到 [MyGo](https://github.com/egoist/mygo) 原生 UI，悬停时和网页版一样动起来：文件夹打开，信封拆开，日历翻到第二天。全部由 MyGo 自己绘制，不用 WebView。
 
 ![MyGo 绘制的图标在播放悬停动画](.github/assets/motion.gif)
 
@@ -110,7 +110,7 @@ MyGo 的 SVG 渲染器不画滤镜，也不画文字，因此：
 
 ```sh
 git clone https://github.com/kubai087/kubai-icons ../kubai-icons
-git -C ../kubai-icons checkout kubai-icons@0.2.2   # 或更新的版本
+git -C ../kubai-icons checkout kubai-icons@0.4.1   # 或更新的版本
 node gen/generate.mjs --upstream ../kubai-icons
 go test ./...
 ```

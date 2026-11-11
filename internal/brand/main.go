@@ -44,7 +44,7 @@ func preview() *image.RGBA {
 			kubai.Shapes().View(c, kubai.Options{Size: 132, Still: true})
 			ui.Column(c).Gap(10).Children(func() {
 				ui.Text(c, "Kubai Icons for MyGo").FontSize(34).Bold().TextColor(ui.Hex("#1B2440"))
-				ui.Text(c, "2,871 icons that move on hover, for MyGo native UI.").FontSize(15).TextColor(ui.Hex("#56607A"))
+				ui.Text(c, "2,901 icons that move on hover, for MyGo native UI.").FontSize(15).TextColor(ui.Hex("#56607A"))
 				ui.Row(c).Gap(14).Padding(14, 0, 0, 0).Children(func() {
 					for i, ic := range row {
 						ic.View(c.Key(i), kubai.Options{Size: 30, Still: true, SemanticBadge: true})
