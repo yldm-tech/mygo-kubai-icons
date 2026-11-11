@@ -5,6 +5,8 @@
 [![CI](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml/badge.svg)](https://github.com/yldm-tech/mygo-kubai-icons/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/yldm-tech/mygo-kubai-icons/kubai.svg)](https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai)
 [![Release](https://img.shields.io/github/v/release/yldm-tech/mygo-kubai-icons)](https://github.com/yldm-tech/mygo-kubai-icons/releases)
+[![X](https://img.shields.io/badge/X-%40suzukaze__haduki-000000?logo=x&logoColor=white)](https://x.com/suzukaze_haduki)
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/houko)
 
 English · [简体中文](README.zh-CN.md)
 
