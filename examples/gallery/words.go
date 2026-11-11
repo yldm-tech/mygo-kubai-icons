@@ -25,7 +25,7 @@ type words struct {
 
 var english = words{
 	title:     "Kubai Icons for MyGo",
-	tagline:   "2,871 icons that move on hover, drawn by MyGo native UI",
+	tagline:   "2,901 icons that move on hover, drawn by MyGo native UI",
 	install:   "go get github.com/yldm-tech/mygo-kubai-icons",
 	copy:      "Copy",
 	copied:    "Copied",
@@ -67,7 +67,7 @@ var english = words{
 var chinese = words{
 	zh:        true,
 	title:     "Kubai Icons for MyGo",
-	tagline:   "2,871 个悬停会动的图标，由 MyGo 原生 UI 绘制",
+	tagline:   "2,901 个悬停会动的图标，由 MyGo 原生 UI 绘制",
 	install:   "go get github.com/yldm-tech/mygo-kubai-icons",
 	copy:      "复制",
 	copied:    "已复制",
