@@ -143,6 +143,7 @@ func TestShadowFallsBelow(t *testing.T) {
 
 // TestMotionPaintsWithoutBuilding checks that an icon playing its hover moves on screen while the view is not built again for each frame, and that it lands on the hover pose.
 func TestMotionPaintsWithoutBuilding(t *testing.T) {
+	kubai.FreshBudget()
 	builds := 0
 	tt := ui.NewTesterWith(func(c *ui.Context) {
 		builds++
@@ -171,6 +172,7 @@ func TestMotionPaintsWithoutBuilding(t *testing.T) {
 
 // TestLessMotionJumps checks that, while the system asks for less motion, an icon goes to its hover pose at once and asks for no frames.
 func TestLessMotionJumps(t *testing.T) {
+	kubai.FreshBudget()
 	tt := ui.NewTesterWith(func(c *ui.Context) {
 		ui.Box(c).Padding(16).Children(func() { kubai.Folder().View(c, kubai.Options{Size: 48}) })
 	}, 80, 80, ui.TesterOptions{Preferences: ui.Preferences{ReduceMotion: true}})
