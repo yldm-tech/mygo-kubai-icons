@@ -126,3 +126,10 @@ go test ./...
 ## 许可
 
 本模块代码采用 MIT 协议。图标来自 Kubai Icons，由 Kubai087 及 Kubai Icons 贡献者以 MIT 协议发布（[licenses/kubai-icons.txt](licenses/kubai-icons.txt)）。字形轮廓来自 Bigelow & Holmes 设计的 Go 字体（[licenses/go-fonts.txt](licenses/go-fonts.txt)）。
+
+## 友情链接
+
+- [Kubai Icons](https://icons.kubai.design/)：原版图标，支持 React、Vue 和 SVG。
+- [MyGo](https://mygo.run/)：用 Go 写桌面应用，可以用原生 UI，也可以用网页前端。
+- [Awesome MyGo](https://awesomemygo.dev/)：收录用 MyGo 开发的应用、UI 组件、插件和文档。
+- [AI Logo](https://ailogo.yldm.ai/)：AI 和各类服务的品牌图标，支持 React、Go 和 CDN。

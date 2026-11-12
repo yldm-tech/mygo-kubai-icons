@@ -16,9 +16,12 @@ const (
 	repoURL     = "https://github.com/yldm-tech/mygo-kubai-icons"
 	docsURL     = "https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai"
 	upstreamURL = "https://icons.kubai.design/"
+	mygoURL     = "https://mygo.run/"
+	awesomeURL  = "https://awesomemygo.dev/"
+	aiLogoURL   = "https://ailogo.yldm.ai/"
 	// compactWidth is the window width below which the sidebar folds into a drop-down and the details open in a dialog: three columns need about this much to fit their text.
 	compactWidth = 1100
-	// roomyWidth is the width from which the header has room for the install command beside the title.
+	// roomyWidth is the width from which the header has room for the install command beside the title, and the footer for the related sites.
 	roomyWidth = 1280
 )
 
@@ -285,7 +288,7 @@ func (g *gallery) view(c *ui.Context) {
 				})
 			}
 		})
-		g.footer(c, w, len(entries))
+		g.footer(c, w, len(entries), width >= roomyWidth)
 	})
 	if compact {
 		if _, ok := g.chosen(); ok && g.dialog {
@@ -501,7 +504,7 @@ func (g *gallery) gridView(c *ui.Context, w words, entries []all.Entry, compact 
 	}
 }
 
-func (g *gallery) footer(c *ui.Context, w words, n int) {
+func (g *gallery) footer(c *ui.Context, w words, n int, roomy bool) {
 	t := c.Theme()
 	ui.Row(c).Padding(8, 20).Gap(6).AlignItems(ui.Center).BorderWidth(1, 0, 0, 0).BorderColor(t.Border).Children(func() {
 		status := w.hint
@@ -521,5 +524,14 @@ func (g *gallery) footer(c *ui.Context, w words, n int) {
 		muted(w.credit)
 		ui.Link(c, w.upstream, upstreamURL).FontSize(12)
 		muted("(" + w.mit + ") · " + w.unofficial + " · " + w.drawnBy)
+		// The related sites show where they leave the hint its room: a narrower window keeps the footer to the count and the credit.
+		if roomy {
+			muted("· " + w.related)
+			ui.Link(c, w.mygo, mygoURL).FontSize(12)
+			muted("·")
+			ui.Link(c, w.awesome, awesomeURL).FontSize(12)
+			muted("·")
+			ui.Link(c, w.aiLogo, aiLogoURL).FontSize(12)
+		}
 	})
 }

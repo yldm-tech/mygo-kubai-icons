@@ -75,6 +75,7 @@
         <p id="about-text">Kubai Icons for MyGo brings the 2,901 icons of <a href="https://icons.kubai.design/">Kubai Icons</a> to <a href="https://github.com/egoist/mygo">MyGo</a> native UI in Go. A folder opens, an envelope unseals, a calendar turns to the next day: each icon moves on hover, and MyGo draws it itself, with no web view. Pick a colour, the soft look and a size, and copy the Go code. An unofficial port; the icons are MIT licensed.</p>
         <p><code>go get github.com/yldm-tech/mygo-kubai-icons@latest</code></p>
         <p><a href="https://github.com/yldm-tech/mygo-kubai-icons">GitHub</a> · <a href="https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai">pkg.go.dev</a> · <a href="https://github.com/yldm-tech/mygo-kubai-icons/releases">Releases</a></p>
+        <p><span id="related">Related</span>: <a href="https://icons.kubai.design/">Kubai Icons</a> · <a href="https://mygo.run/">MyGo</a> · <a href="https://awesomemygo.dev/">Awesome MyGo</a> · <a href="https://ailogo.yldm.ai/">AI Logo</a></p>
       </section>
       <noscript><p class="error">The gallery runs as WebAssembly and needs JavaScript. See <a href="https://github.com/yldm-tech/mygo-kubai-icons">the repository</a>.</p></noscript>
     </main>
@@ -83,11 +84,12 @@
       // The page speaks Chinese to a browser that prefers it, as the gallery does (it follows the same languages through MyGo).
       const zh = /^zh/i.test(navigator.languages?.[0] || navigator.language || "")
       const say = zh
-        ? { tagline: "2,901 个悬停会动的图标，由 MyGo 原生 UI 绘制", about: "把 Kubai Icons 的 2,901 个图标搬到 Go 语言的 MyGo 原生 UI：文件夹打开，信封拆开，日历翻到第二天，每个图标悬停时都会动，全部由 MyGo 自己绘制，不用 WebView。可以选颜色、清透风格和尺寸，复制 Go 代码。非官方移植，图标采用 MIT 协议。", loading: "正在加载图库", starting: "正在启动…", failed: "图库加载失败：", repo: "查看仓库" }
+        ? { tagline: "2,901 个悬停会动的图标，由 MyGo 原生 UI 绘制", about: "把 Kubai Icons 的 2,901 个图标搬到 Go 语言的 MyGo 原生 UI：文件夹打开，信封拆开，日历翻到第二天，每个图标悬停时都会动，全部由 MyGo 自己绘制，不用 WebView。可以选颜色、清透风格和尺寸，复制 Go 代码。非官方移植，图标采用 MIT 协议。", related: "友链", loading: "正在加载图库", starting: "正在启动…", failed: "图库加载失败：", repo: "查看仓库" }
         : { tagline: "2,901 icons that move on hover, drawn by MyGo native UI", loading: "Loading the gallery", starting: "Starting…", failed: "The gallery did not load: ", repo: "See the repository" }
       if (zh) document.documentElement.lang = "zh-CN"
       document.getElementById("tagline").textContent = say.tagline
       if (say.about) document.getElementById("about-text").textContent = say.about
+      if (say.related) document.getElementById("related").textContent = say.related
       const status = document.getElementById("status")
       const bar = document.getElementById("bar")
       const mb = (n) => (n / 1048576).toFixed(1)
