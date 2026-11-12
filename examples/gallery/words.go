@@ -20,7 +20,7 @@ type words struct {
 
 	pick, preview, previewHint, previewDemo, previewDemoTouch, active, name, function, inCategory, code, copyCode, variants string
 
-	credit, mit, unofficial, drawnBy, related, mygo, awesome, aiLogo string
+	credit, mit, unofficial, drawnBy, links string
 }
 
 var english = words{
@@ -62,10 +62,7 @@ var english = words{
 	mit:        "MIT",
 	unofficial: "Unofficial port",
 	drawnBy:    "Drawn by MyGo, compiled to WebAssembly",
-	related:    "Related:",
-	mygo:       "MyGo",
-	awesome:    "Awesome MyGo",
-	aiLogo:     "AI Logo",
+	links:      "Links",
 }
 
 var chinese = words{
@@ -108,10 +105,7 @@ var chinese = words{
 	mit:        "MIT 协议",
 	unofficial: "非官方移植",
 	drawnBy:    "由 MyGo 绘制，编译为 WebAssembly",
-	related:    "友链：",
-	mygo:       "MyGo",
-	awesome:    "Awesome MyGo",
-	aiLogo:     "AI Logo",
+	links:      "友链",
 }
 
 // say picks the language the app shows: Chinese for any zh locale, English otherwise.
