@@ -10,7 +10,7 @@
 
 English · [简体中文](README.zh-CN.md)
 
-The 2,901 icons of [Kubai Icons](https://github.com/kubai087/kubai-icons) for [MyGo](https://github.com/egoist/mygo) native UI, moving on hover as they do on the web: a folder opens, an envelope unseals, a calendar turns to the next day. MyGo draws them itself, with no web view.
+The 2,901 icons of [Kubai Icons](https://icons.kubai.design/) for [MyGo](https://github.com/egoist/mygo) native UI, moving on hover as they do on the web: a folder opens, an envelope unseals, a calendar turns to the next day. MyGo draws them itself, with no web view.
 
 ![Icons playing their hover motion, drawn by MyGo](.github/assets/motion.gif)
 
@@ -126,3 +126,10 @@ Merging to `main` releases by itself once CI passes (`.github/workflows/release.
 ## License
 
 MIT for this module's code. The icons are from Kubai Icons, MIT licensed by Kubai087 and the Kubai Icons contributors ([licenses/kubai-icons.txt](licenses/kubai-icons.txt)). The glyph outlines come from the Go fonts by Bigelow & Holmes ([licenses/go-fonts.txt](licenses/go-fonts.txt)).
+
+## Related
+
+- [Kubai Icons](https://icons.kubai.design/): the original icons, for React, Vue and SVG.
+- [MyGo](https://mygo.run/): desktop apps in Go, with native UI or a web frontend.
+- [Awesome MyGo](https://awesomemygo.dev/): apps, UI components, plugins and docs for MyGo.
+- [AI Logo](https://ailogo.yldm.ai/): AI and service brand icons for React, Go and CDN.

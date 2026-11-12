@@ -15,7 +15,7 @@ import (
 const (
 	repoURL     = "https://github.com/yldm-tech/mygo-kubai-icons"
 	docsURL     = "https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai"
-	upstreamURL = "https://github.com/kubai087/kubai-icons"
+	upstreamURL = "https://icons.kubai.design/"
 	// compactWidth is the window width below which the sidebar folds into a drop-down and the details open in a dialog: three columns need about this much to fit their text.
 	compactWidth = 1100
 	// roomyWidth is the width from which the header has room for the install command beside the title.
@@ -32,6 +32,17 @@ var accents = []struct {
 	{"orange", ui.Hex("#F97316")},
 	{"green", ui.Hex("#22C55E")},
 	{"slate", ui.Hex("#64748B")},
+}
+
+// links are the related sites the gallery lists in a block of their own, each with an icon of this package.
+var links = []struct {
+	name, url string
+	icon      func() *kubai.Icon
+}{
+	{"Kubai Icons", upstreamURL, kubai.Shapes},
+	{"MyGo", "https://mygo.run/", kubai.Rocket},
+	{"Awesome MyGo", "https://awesomemygo.dev/", kubai.Star},
+	{"AI Logo", "https://ailogo.yldm.ai/", kubai.Sparkles},
 }
 
 // categoryIcons is the icon each category shows in the sidebar.
@@ -285,6 +296,9 @@ func (g *gallery) view(c *ui.Context) {
 				})
 			}
 		})
+		if compact {
+			g.linksBar(c, w)
+		}
 		g.footer(c, w, len(entries))
 	})
 	if compact {
@@ -335,36 +349,65 @@ func (g *gallery) header(c *ui.Context, w words, compact, roomy bool) {
 func (g *gallery) sidebar(c *ui.Context, w words) {
 	t := c.Theme()
 	counts := g.categoryCounts()
-	ui.Scroll(c).Width(232).Shrink(0).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
-		ui.Column(c).Padding(12, 10).Gap(2).Children(func() {
-			item := func(id, label string, icon *kubai.Icon) {
-				row := ui.Row(c.Key("cat-"+id)).Gap(10).AlignItems(ui.Center).Padding(6, 10).Radius(8).Cursor(ui.CursorPointer).Label(label)
-				switch {
-				case g.category == id:
-					row.Background(t.SurfacePressed)
-				case row.Hovered():
-					row.Background(t.SurfaceHover)
-				}
-				if row.Clicked() {
-					g.category = id
-				}
-				row.Children(func() {
-					// The categories keep the default look whatever the toolbar sets, so that a switch redraws only the icons it shows.
-					o := kubai.Options{Size: 20, NoShadow: true, Hovered: row.Hovered()}
-					icon.View(c, o)
-					txt := ui.Text(c, label).FontSize(13).Grow(1).MaxLines(1)
-					if g.category == id {
-						txt.Bold()
+	ui.Column(c).Width(232).Shrink(0).BorderWidth(0, 1, 0, 0).BorderColor(t.Border).Children(func() {
+		ui.Scroll(c).Grow(1).Children(func() {
+			ui.Column(c).Padding(12, 10).Gap(2).Children(func() {
+				item := func(id, label string, icon *kubai.Icon) {
+					row := ui.Row(c.Key("cat-"+id)).Gap(10).AlignItems(ui.Center).Padding(6, 10).Radius(8).Cursor(ui.CursorPointer).Label(label)
+					switch {
+					case g.category == id:
+						row.Background(t.SurfacePressed)
+					case row.Hovered():
+						row.Background(t.SurfaceHover)
 					}
-					ui.Textf(c, "%d", counts[id]).FontSize(11).TextColor(t.TextMuted)
-				})
-			}
-			item("", w.all, kubai.Shapes())
-			ui.Box(c).Height(8)
-			for _, cat := range all.Categories {
-				item(cat.ID, w.categoryName(cat.ID), categoryIcons[cat.ID]())
-			}
+					if row.Clicked() {
+						g.category = id
+					}
+					row.Children(func() {
+						// The categories keep the default look whatever the toolbar sets, so that a switch redraws only the icons it shows.
+						o := kubai.Options{Size: 20, NoShadow: true, Hovered: row.Hovered()}
+						icon.View(c, o)
+						txt := ui.Text(c, label).FontSize(13).Grow(1).MaxLines(1)
+						if g.category == id {
+							txt.Bold()
+						}
+						ui.Textf(c, "%d", counts[id]).FontSize(11).TextColor(t.TextMuted)
+					})
+				}
+				item("", w.all, kubai.Shapes())
+				ui.Box(c).Height(8)
+				for _, cat := range all.Categories {
+					item(cat.ID, w.categoryName(cat.ID), categoryIcons[cat.ID]())
+				}
+			})
 		})
+		g.linksBlock(c, w)
+	})
+}
+
+// linksBlock lists the related sites under the categories, where it stays as they scroll.
+func (g *gallery) linksBlock(c *ui.Context, w words) {
+	t := c.Theme()
+	ui.Column(c).Padding(14, 20).Gap(10).Shrink(0).BorderWidth(1, 0, 0, 0).BorderColor(t.Border).Children(func() {
+		ui.Text(c, w.links).FontSize(11).Bold().TextColor(t.TextMuted)
+		for _, l := range links {
+			row := ui.Row(c.Key("link-" + l.name)).Gap(10).AlignItems(ui.Center)
+			row.Children(func() {
+				l.icon().View(c, kubai.Options{Size: 20, NoShadow: true, Hovered: row.Hovered()})
+				ui.Link(c, l.name, l.url).FontSize(13)
+			})
+		}
+	})
+}
+
+// linksBar is the same list as a row above the footer, for a compact window, which has no sidebar.
+func (g *gallery) linksBar(c *ui.Context, w words) {
+	t := c.Theme()
+	ui.Row(c).Padding(8, 20).Gap(14).Wrap().AlignItems(ui.Center).BorderWidth(1, 0, 0, 0).BorderColor(t.Border).Children(func() {
+		ui.Text(c, w.links).FontSize(11).Bold().TextColor(t.TextMuted)
+		for _, l := range links {
+			ui.Link(c.Key("link-"+l.name), l.name, l.url).FontSize(12)
+		}
 	})
 }
 
