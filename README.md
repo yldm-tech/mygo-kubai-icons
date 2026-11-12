@@ -10,7 +10,7 @@
 
 English · [简体中文](README.zh-CN.md)
 
-The 2,901 icons of [Kubai Icons](https://github.com/kubai087/kubai-icons) for [MyGo](https://github.com/egoist/mygo) native UI, moving on hover as they do on the web: a folder opens, an envelope unseals, a calendar turns to the next day. MyGo draws them itself, with no web view.
+The 2,901 icons of [Kubai Icons](https://icons.kubai.design/) for [MyGo](https://github.com/egoist/mygo) native UI, moving on hover as they do on the web: a folder opens, an envelope unseals, a calendar turns to the next day. MyGo draws them itself, with no web view.
 
 ![Icons playing their hover motion, drawn by MyGo](.github/assets/motion.gif)
 

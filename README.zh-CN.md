@@ -10,7 +10,7 @@
 
 [English](README.md) · 简体中文
 
-把 [Kubai Icons](https://github.com/kubai087/kubai-icons) 的 2,901 个图标搬到 [MyGo](https://github.com/egoist/mygo) 原生 UI，悬停时和网页版一样动起来：文件夹打开，信封拆开，日历翻到第二天。全部由 MyGo 自己绘制，不用 WebView。
+把 [Kubai Icons](https://icons.kubai.design/) 的 2,901 个图标搬到 [MyGo](https://github.com/egoist/mygo) 原生 UI，悬停时和网页版一样动起来：文件夹打开，信封拆开，日历翻到第二天。全部由 MyGo 自己绘制，不用 WebView。
 
 ![MyGo 绘制的图标在播放悬停动画](.github/assets/motion.gif)
 

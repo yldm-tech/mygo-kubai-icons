@@ -15,7 +15,7 @@ import (
 const (
 	repoURL     = "https://github.com/yldm-tech/mygo-kubai-icons"
 	docsURL     = "https://pkg.go.dev/github.com/yldm-tech/mygo-kubai-icons/kubai"
-	upstreamURL = "https://github.com/kubai087/kubai-icons"
+	upstreamURL = "https://icons.kubai.design/"
 	// compactWidth is the window width below which the sidebar folds into a drop-down and the details open in a dialog: three columns need about this much to fit their text.
 	compactWidth = 1100
 	// roomyWidth is the width from which the header has room for the install command beside the title.
